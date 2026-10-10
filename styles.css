@@ -1,0 +1,744 @@
+:root {
+    font-family: 'Avenir Next', 'Segoe UI', sans-serif;
+    color: #25362f;
+    background: #f4f7ef;
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+    --ink: #25362f;
+    --muted: #718078;
+    --green: #315f4a;
+    --green-dark: #244737;
+    --line: #dce5da;
+    --paper: #fffefa;
+    --coral: #d66e59;
+    --blue: #638da2;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    min-width: 320px;
+    min-height: 100vh;
+    margin: 0;
+    background-color: #f4f7ef;
+    background-image: radial-gradient(#d9e3d7 0.7px, transparent 0.7px);
+    background-size: 19px 19px;
+}
+
+button,
+input {
+    font: inherit;
+}
+
+button {
+    color: inherit;
+}
+
+.site-header {
+    height: 78px;
+    padding: 0 max(24px, calc((100vw - 1100px) / 2));
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: rgba(255, 254, 250, 0.94);
+    border-bottom: 1px solid #e4e9e0;
+}
+
+.brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 11px;
+    color: var(--ink);
+    text-decoration: none;
+    font-size: 18px;
+}
+
+.brand img {
+    width: 42px;
+    height: 42px;
+}
+
+.brand span {
+    font-family: 'Baskerville', Georgia, serif;
+    font-size: 22px;
+}
+
+.brand strong {
+    color: var(--green);
+    font-weight: 400;
+}
+
+.local-indicator {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: #62736a;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.local-indicator span {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #6a9a72;
+    box-shadow: 0 0 0 3px #e8f1e6;
+}
+
+.app-shell {
+    width: min(100% - 48px, 1040px);
+    margin: 35px auto 0;
+}
+
+.tabs {
+    display: flex;
+    gap: 28px;
+    border-bottom: 1px solid #ccd9cd;
+}
+
+.tab {
+    position: relative;
+    border: 0;
+    background: transparent;
+    padding: 0 1px 13px;
+    color: #7a8980;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.tab::after {
+    position: absolute;
+    content: '';
+    height: 2px;
+    right: 0;
+    bottom: -1px;
+    left: 0;
+    background: transparent;
+}
+
+.tab:hover {
+    color: var(--green);
+}
+
+.tab.is-active {
+    color: var(--green-dark);
+}
+
+.tab.is-active::after {
+    background: var(--coral);
+}
+
+.tab:focus-visible,
+button:focus-visible,
+input:focus-visible {
+    outline: 3px solid #82a7b8;
+    outline-offset: 2px;
+}
+
+.tab-panel {
+    animation: arrive 260ms ease both;
+}
+
+@keyframes arrive {
+    from {
+        opacity: 0;
+        transform: translateY(5px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.page-heading {
+    min-height: 120px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 0 20px;
+}
+
+.eyebrow {
+    margin: 0 0 8px;
+    color: #819087;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+}
+
+h1,
+h2,
+p {
+    margin-top: 0;
+}
+
+h1 {
+    margin-bottom: 0;
+    font-family: 'Baskerville', Georgia, serif;
+    font-size: 34px;
+    line-height: 1.1;
+    font-weight: 400;
+}
+
+h2 {
+    margin: 0;
+    font-family: 'Baskerville', Georgia, serif;
+    font-size: 22px;
+    line-height: 1.2;
+    font-weight: 400;
+}
+
+.plant-count,
+.season-month {
+    margin: 12px 0 0;
+    color: var(--muted);
+    font-size: 12px;
+}
+
+.form-panel {
+    padding: 22px 25px 18px;
+    background: var(--paper);
+    border: 1px solid #e3e8df;
+    border-left: 3px solid var(--green);
+    box-shadow: 0 9px 23px rgba(42, 71, 52, 0.045);
+}
+
+.section-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.form-panel .section-heading {
+    margin-bottom: 20px;
+}
+
+.form-mark {
+    display: grid;
+    place-items: center;
+    width: 31px;
+    height: 31px;
+    border: 1px solid #e1e9df;
+    border-radius: 50%;
+    color: var(--green);
+    font-size: 19px;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: 1.45fr 0.8fr 0.8fr 1fr 1.15fr 1.15fr;
+    gap: 14px;
+}
+
+.field {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    color: #5f7067;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.field small {
+    color: #95a198;
+    font-size: 10px;
+    font-weight: 500;
+}
+
+.field input:not([type='color']) {
+    width: 100%;
+    height: 39px;
+    padding: 0 10px;
+    border: 1px solid #dce4db;
+    border-radius: 3px;
+    background: #fff;
+    color: var(--ink);
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.field input::placeholder {
+    color: #b1bbb3;
+}
+
+.color-control {
+    display: flex;
+    height: 39px;
+    align-items: center;
+    gap: 9px;
+    border: 1px solid #dce4db;
+    border-radius: 3px;
+    padding: 0 8px;
+    background: #fff;
+}
+
+.color-control input {
+    width: 24px;
+    height: 24px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+}
+
+.color-control input::-webkit-color-swatch-wrapper {
+    padding: 0;
+}
+
+.color-control input::-webkit-color-swatch {
+    border: 1px solid rgba(37, 54, 47, 0.12);
+    border-radius: 50%;
+}
+
+.color-control span {
+    color: #79877e;
+    font-size: 10px;
+    font-weight: 600;
+}
+
+.form-actions {
+    display: flex;
+    min-height: 45px;
+    align-items: end;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 15px;
+}
+
+.form-message {
+    margin: 0;
+    color: #a64e41;
+    font-size: 11px;
+}
+
+.action-buttons {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+}
+
+.button {
+    min-height: 36px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    padding: 0 13px;
+    border: 1px solid transparent;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.button-primary {
+    color: #fffefa;
+    background: var(--green);
+}
+
+.button-primary:hover {
+    background: var(--green-dark);
+}
+
+.button-primary span {
+    font-size: 16px;
+    line-height: 0;
+    font-weight: 400;
+}
+
+.button-quiet {
+    border-color: #dce4db;
+    background: transparent;
+    color: #64736a;
+}
+
+.button-quiet:hover {
+    background: #f2f6ef;
+}
+
+.is-hidden {
+    display: none !important;
+}
+
+.collection {
+    margin-top: 34px;
+}
+
+.collection-heading {
+    margin-bottom: 14px;
+}
+
+.collection-count {
+    min-width: 26px;
+    height: 26px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: #e7efe5;
+    color: var(--green);
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.table-wrap {
+    overflow-x: auto;
+    border-top: 1px solid #cfdace;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+}
+
+thead {
+    color: #86948b;
+}
+
+th {
+    height: 40px;
+    padding: 0 12px;
+    font-size: 10px;
+    font-weight: 700;
+}
+
+th:first-child,
+td:first-child {
+    padding-left: 3px;
+}
+
+tbody tr {
+    border-top: 1px solid #dce4dc;
+}
+
+td {
+    height: 61px;
+    padding: 9px 12px;
+    color: #63736a;
+    font-size: 12px;
+    white-space: nowrap;
+}
+
+.plant-name-cell {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--ink);
+    font-weight: 700;
+}
+
+.plant-dot {
+    width: 11px;
+    height: 11px;
+    flex: 0 0 11px;
+    border: 2px solid rgba(37, 54, 47, 0.08);
+    border-radius: 50%;
+}
+
+.size-cell {
+    color: #617167;
+}
+
+.color-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    color: #718078;
+    font-size: 10px;
+    text-transform: uppercase;
+}
+
+.color-chip i {
+    width: 16px;
+    height: 16px;
+    border: 1px solid rgba(37, 54, 47, 0.12);
+    border-radius: 50%;
+}
+
+.row-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 5px;
+}
+
+.icon-button {
+    width: 30px;
+    height: 30px;
+    display: grid;
+    place-items: center;
+    border: 1px solid transparent;
+    border-radius: 3px;
+    background: transparent;
+    color: #74837a;
+    cursor: pointer;
+}
+
+.icon-button:hover {
+    border-color: #dce4db;
+    background: #f5f8f2;
+    color: var(--green);
+}
+
+.icon-button.delete:hover {
+    color: #b24f45;
+}
+
+.icon-button svg {
+    width: 15px;
+    height: 15px;
+}
+
+.empty-state {
+    display: none;
+    min-height: 125px;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border-bottom: 1px solid #dce4dc;
+    color: #87958c;
+}
+
+.empty-state.is-visible {
+    display: flex;
+}
+
+.empty-state p {
+    margin: 0;
+    font-size: 12px;
+}
+
+.empty-icon {
+    color: var(--coral);
+    font-size: 23px;
+}
+
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+.season-summary {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    margin: 4px 0 36px;
+    border-top: 1px solid #ccd9cd;
+    border-bottom: 1px solid #ccd9cd;
+}
+
+.summary-item {
+    min-height: 127px;
+    padding: 23px 25px;
+    border-right: 1px solid #ccd9cd;
+}
+
+.summary-item:last-child {
+    border-right: 0;
+}
+
+.summary-value {
+    display: block;
+    color: var(--green);
+    font-family: 'Baskerville', Georgia, serif;
+    font-size: 35px;
+    line-height: 1;
+}
+
+.summary-label {
+    display: block;
+    margin-top: 12px;
+    color: #718078;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.season-list {
+    border-top: 1px solid #cfdace;
+}
+
+.season-row {
+    min-height: 62px;
+    display: grid;
+    grid-template-columns: 1fr 130px 110px;
+    align-items: center;
+    gap: 14px;
+    border-bottom: 1px solid #dce4dc;
+    font-size: 12px;
+}
+
+.season-plant {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 700;
+}
+
+.season-dates,
+.season-size {
+    color: #718078;
+}
+
+.season-empty {
+    padding: 24px 3px;
+    color: #87958c;
+    font-size: 12px;
+}
+
+.app-footer {
+    display: flex;
+    justify-content: space-between;
+    margin: 49px 0 24px;
+    padding-top: 13px;
+    border-top: 1px solid #dce4dc;
+    color: #89968d;
+    font-size: 9px;
+}
+
+.app-footer span:first-child {
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
+@media (max-width: 900px) {
+    .form-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .field-name {
+        grid-column: span 1;
+    }
+}
+
+@media (max-width: 600px) {
+    .site-header {
+        height: 66px;
+        padding: 0 18px;
+    }
+
+    .brand img {
+        width: 36px;
+        height: 36px;
+    }
+
+    .brand span {
+        font-size: 19px;
+    }
+
+    .local-indicator {
+        font-size: 0;
+        gap: 0;
+    }
+
+    .local-indicator span {
+        width: 8px;
+        height: 8px;
+    }
+
+    .app-shell {
+        width: calc(100% - 36px);
+        margin-top: 25px;
+    }
+
+    .tabs {
+        gap: 22px;
+    }
+
+    .page-heading {
+        min-height: 105px;
+    }
+
+    h1 {
+        font-size: 30px;
+    }
+
+    .form-panel {
+        padding: 19px 16px 15px;
+    }
+
+    .form-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 14px 11px;
+    }
+
+    .field-name {
+        grid-column: span 2;
+    }
+
+    .form-actions {
+        align-items: center;
+    }
+
+    .form-message {
+        max-width: 45%;
+    }
+
+    .collection {
+        margin-top: 28px;
+    }
+
+    table {
+        min-width: 625px;
+    }
+
+    .season-summary {
+        grid-template-columns: 1fr;
+    }
+
+    .summary-item {
+        min-height: 91px;
+        display: flex;
+        align-items: center;
+        gap: 18px;
+        padding: 15px 12px;
+        border-right: 0;
+        border-bottom: 1px solid #ccd9cd;
+    }
+
+    .summary-item:last-child {
+        border-bottom: 0;
+    }
+
+    .summary-label {
+        margin-top: 0;
+    }
+
+    .summary-value {
+        min-width: 37px;
+        font-size: 31px;
+    }
+
+    .season-row {
+        grid-template-columns: 1fr 96px;
+        gap: 8px;
+    }
+
+    .season-size {
+        display: none;
+    }
+
+    .app-footer {
+        margin-top: 38px;
+        font-size: 8px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}
