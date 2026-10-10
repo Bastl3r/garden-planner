@@ -4,8 +4,9 @@ A small installable, offline-capable plant planner. Plant details are stored in 
 
 ## Features
 - Manage a plant collection, including dimensions, color, and blossom months.
+- Draw and erase planter outlines, fill and erase footpaths, and place scaled plants on multiple saved garden plans.
 - Switch between German and English; the selected language is saved in the browser.
-- Export a versioned JSON backup containing all persisted app data (plants and language), or import one to replace the saved data after confirmation.
+- Export a versioned JSON backup containing all persisted app data (plants, language, and garden plans), or import one to replace the saved data after confirmation.
 - Install the app and use its cached shell offline.
 
 ## Running

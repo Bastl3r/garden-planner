@@ -1,7 +1,10 @@
 const STORAGE_KEY = 'garden-planner-plants-v1';
 const LANGUAGE_KEY = 'garden-planner-language';
+const GARDEN_PLANS_STORAGE_KEY = 'garden-planner-plans-v1';
 const BACKUP_FORMAT = 'garden-planner-backup';
 const BACKUP_VERSION = 1;
+const GRID_CELLS_PER_METER = 20;
+const MAX_PLAN_DIMENSION = 20;
 const translations = {
     de: {
         brandLabel: 'Garden Planner Startseite', savedOnDevice: 'Lokal auf diesem Gerät gespeichert', gardenViews: 'Gartenansichten',
@@ -19,6 +22,17 @@ const translations = {
         plantCountOne: 'Pflanze', plantCountMany: 'Pflanzen', plantsInLibrary: 'Pflanzen in deiner Sammlung', floweringCount: 'Blühen in diesem Monat',
         nextPrefix: 'Als Nächstes: {name}', noUpcoming: 'Keine bevorstehenden Blütentermine', nothingFlowering: 'Für diesen Monat ist keine Blüte eingetragen.',
         metersTall: '{height} m hoch',
+        gardenPlanTab: 'Gartenplan', planEyebrow: 'GARTENENTWURF', gardenPlanTitle: 'Gartenplan', choosePlan: 'Plan auswählen',
+        newPlan: 'Neuer Plan', deletePlan: 'Plan löschen', planEditor: 'Gartenplan-Editor', planName: 'Planname', planWidth: 'Breite', planHeight: 'Höhe',
+        drawingTools: 'Zeichenwerkzeuge', drawOutlines: 'Umrisse zeichnen', pencilTool: 'Stift', fillPath: 'Fußweg füllen', paintBucketTool: 'Füllung',
+        eraseDrawing: 'Umrisse und Fußwege entfernen', eraserTool: 'Radierer',
+        placePlants: 'Pflanzen platzieren', placePlantTool: 'Pflanzen', selectPlant: 'Pflanze wählen', planCanvasLabel: 'Draufsicht des Gartenplans',
+        placedPlants: 'IM PLAN', plantedTableTitle: 'Gepflanzte Pflanzen', position: 'Position', noPlacedPlants: 'Noch keine Pflanzen platziert.',
+        defaultPlanName: 'Mein Garten', newPlanName: 'Garten {number}',
+        confirmDeletePlan: '„{name}“ und alle zugehörigen Zeichnungen und Pflanzen löschen?', planSaveError: 'Der Gartenplan konnte nicht gespeichert werden.',
+        planSizeError: 'Breite und Höhe müssen zwischen 1 und 20 Metern liegen.', noPlantsInLibrary: 'Keine Pflanzen in der Pflanzenübersicht.',
+        choosePlantPlaceholder: 'Pflanze auswählen', selectPlacedPlant: '{name} auf dem Plan auswählen', removePlacedPlant: '{name} aus dem Plan entfernen',
+        planPosition: '{x} m, {y} m',
     },
     en: {
         brandLabel: 'Garden Planner home', savedOnDevice: 'Saved on this device', gardenViews: 'Garden views',
@@ -36,6 +50,17 @@ const translations = {
         plantCountOne: 'plant', plantCountMany: 'plants', plantsInLibrary: 'Plants in your library', floweringCount: 'Flowering this month',
         nextPrefix: 'Next: {name}', noUpcoming: 'No upcoming blossom dates', nothingFlowering: 'Nothing is marked as flowering this month.',
         metersTall: '{height} m tall',
+        gardenPlanTab: 'Garden plan', planEyebrow: 'GARDEN DESIGN', gardenPlanTitle: 'Garden plan', choosePlan: 'Choose plan',
+        newPlan: 'New plan', deletePlan: 'Delete plan', planEditor: 'Garden plan editor', planName: 'Plan name', planWidth: 'Width', planHeight: 'Height',
+        drawingTools: 'Drawing tools', drawOutlines: 'Draw outlines', pencilTool: 'Pencil', fillPath: 'Fill footpath', paintBucketTool: 'Paint can',
+        eraseDrawing: 'Erase outlines and footpaths', eraserTool: 'Eraser',
+        placePlants: 'Place plants', placePlantTool: 'Plants', selectPlant: 'Select plant', planCanvasLabel: 'Bird’s-eye garden plan',
+        placedPlants: 'ON THIS PLAN', plantedTableTitle: 'Planted plants', position: 'Position', noPlacedPlants: 'No plants placed yet.',
+        defaultPlanName: 'My garden', newPlanName: 'Garden {number}',
+        confirmDeletePlan: 'Delete “{name}” and all its drawings and plants?', planSaveError: 'Could not save this garden plan.',
+        planSizeError: 'Width and height must be between 1 and 20 meters.', noPlantsInLibrary: 'No plants in the plant library.',
+        choosePlantPlaceholder: 'Choose a plant', selectPlacedPlant: 'Select {name} on the plan', removePlacedPlant: 'Remove {name} from the plan',
+        planPosition: '{x} m, {y} m',
     },
 };
 
@@ -62,6 +87,22 @@ const colorInput = document.querySelector('#color');
 const languageSelect = document.querySelector('#languageSelect');
 const backupFileInput = document.querySelector('#backupFile');
 const backupMessage = document.querySelector('#backupMessage');
+const gardenPlanSelect = document.querySelector('#gardenPlanSelect');
+const gardenPlanName = document.querySelector('#gardenPlanName');
+const gardenPlanWidth = document.querySelector('#gardenPlanWidth');
+const gardenPlanHeight = document.querySelector('#gardenPlanHeight');
+const planPlantSelect = document.querySelector('#planPlantSelect');
+const planCanvas = document.querySelector('#planCanvas');
+const planContext = planCanvas.getContext('2d', { willReadFrequently: true });
+const planMessage = document.querySelector('#planMessage');
+const plantedRows = document.querySelector('#plantedRows');
+let gardenState = readGardenState();
+let activePlanTool = 'pencil';
+let selectedPlacementId = null;
+let drawingPointer = null;
+let lastDrawPoint = null;
+let drawingSurface = null;
+let planRenderFrame = null;
 let plants = readPlants();
 let editingId = null;
 
@@ -83,6 +124,9 @@ function applyTranslations() {
     });
     document.querySelectorAll('[data-i18n-aria-label]').forEach((element) => {
         element.setAttribute('aria-label', t(element.dataset.i18nAriaLabel));
+    });
+    document.querySelectorAll('[data-i18n-title]').forEach((element) => {
+        element.title = t(element.dataset.i18nTitle);
     });
     document.querySelector('#pageDescription').content = currentLanguage === 'de'
         ? 'Ein lokaler Gartenplaner zur Verwaltung deiner Pflanzen.'
@@ -131,6 +175,292 @@ function normalizeMonth(value) {
     return typeof value === 'string' ? value.match(/^(?:\d{4}-)?(0[1-9]|1[0-2])$/)?.[1] || '' : '';
 }
 
+function createId() {
+    return crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+}
+
+function createGardenPlan(name = t('defaultPlanName')) {
+    return { id: createId(), name, width: 5, height: 5, surface: '', placements: [] };
+}
+
+function gardenGridSize(plan) {
+    return {
+        columns: Math.round(plan.width * GRID_CELLS_PER_METER),
+        rows: Math.round(plan.height * GRID_CELLS_PER_METER),
+    };
+}
+
+function unpackSurface(encoded, cellCount) {
+    const surface = new Uint8Array(cellCount);
+    if (!encoded) return surface;
+    const binary = atob(encoded);
+    if (binary.length !== Math.ceil(cellCount / 4)) throw new Error('Invalid plan surface');
+    for (let index = 0; index < cellCount; index += 1) {
+        const value = binary.charCodeAt(Math.floor(index / 4)) >> ((index % 4) * 2) & 3;
+        if (value > 2) throw new Error('Invalid plan surface cell');
+        surface[index] = value;
+    }
+    return surface;
+}
+
+function packSurface(surface) {
+    const packed = new Uint8Array(Math.ceil(surface.length / 4));
+    for (let index = 0; index < surface.length; index += 1) {
+        packed[Math.floor(index / 4)] |= surface[index] << ((index % 4) * 2);
+    }
+    let binary = '';
+    for (let offset = 0; offset < packed.length; offset += 0x8000) {
+        binary += String.fromCharCode(...packed.subarray(offset, offset + 0x8000));
+    }
+    return btoa(binary);
+}
+
+function normalizeGardenPlan(value) {
+    const width = Number(value?.width);
+    const height = Number(value?.height);
+    if (!value || typeof value.id !== 'string' || !value.id || typeof value.name !== 'string'
+        || !value.name.trim() || !Number.isFinite(width) || !Number.isFinite(height)
+        || width < 1 || height < 1 || width > MAX_PLAN_DIMENSION || height > MAX_PLAN_DIMENSION
+        || Math.round(width * GRID_CELLS_PER_METER) * Math.round(height * GRID_CELLS_PER_METER) > 160000
+        || typeof value.surface !== 'string' || !Array.isArray(value.placements)) {
+        throw new Error('Invalid garden plan');
+    }
+    const { columns, rows: gridRows } = gardenGridSize({ width, height });
+    unpackSurface(value.surface, columns * gridRows);
+    const placements = value.placements.map((placement) => {
+        const normalized = {
+            id: placement?.id,
+            plantId: placement?.plantId,
+            name: typeof placement?.name === 'string' ? placement.name.trim() : '',
+            diameter: Number(placement?.diameter),
+            height: Number(placement?.height),
+            color: placement?.color,
+            x: Number(placement?.x),
+            y: Number(placement?.y),
+        };
+        if (typeof normalized.id !== 'string' || !normalized.id || typeof normalized.plantId !== 'string'
+            || !normalized.name || !Number.isFinite(normalized.diameter) || normalized.diameter < 0
+            || !Number.isFinite(normalized.height) || normalized.height < 0 || !/^#[\da-f]{6}$/i.test(normalized.color)
+            || !Number.isFinite(normalized.x) || !Number.isFinite(normalized.y)
+            || normalized.x < 0 || normalized.x > width || normalized.y < 0 || normalized.y > height) {
+            throw new Error('Invalid plant placement');
+        }
+        return normalized;
+    });
+    if (new Set(placements.map((placement) => placement.id)).size !== placements.length) {
+        throw new Error('Duplicate placement IDs');
+    }
+    return { id: value.id, name: value.name.trim(), width, height, surface: value.surface, placements };
+}
+
+function normalizeGardenState(value) {
+    if (!value || !Array.isArray(value.plans) || !value.plans.length) throw new Error('Invalid garden plans');
+    const plans = value.plans.map(normalizeGardenPlan);
+    if (new Set(plans.map((plan) => plan.id)).size !== plans.length) throw new Error('Duplicate plan IDs');
+    return {
+        selectedId: plans.some((plan) => plan.id === value.selectedId) ? value.selectedId : plans[0].id,
+        plans,
+    };
+}
+
+function readGardenState() {
+    try {
+        const saved = localStorage.getItem(GARDEN_PLANS_STORAGE_KEY);
+        return saved ? normalizeGardenState(JSON.parse(saved)) : (() => {
+            const plan = createGardenPlan();
+            return { selectedId: plan.id, plans: [plan] };
+        })();
+    } catch {
+        const plan = createGardenPlan();
+        return { selectedId: plan.id, plans: [plan] };
+    }
+}
+
+function persistGardenState() {
+    try {
+        localStorage.setItem(GARDEN_PLANS_STORAGE_KEY, JSON.stringify(gardenState));
+        planMessage.textContent = '';
+        return true;
+    } catch {
+        planMessage.textContent = t('planSaveError');
+        return false;
+    }
+}
+
+function getCurrentGardenPlan() {
+    return gardenState.plans.find((plan) => plan.id === gardenState.selectedId) || gardenState.plans[0];
+}
+
+function renderGardenPlan() {
+    const plan = getCurrentGardenPlan();
+    const { columns, rows: gridRows } = gardenGridSize(plan);
+    gardenPlanSelect.replaceChildren(...gardenState.plans.map((item) => new Option(item.name, item.id)));
+    gardenPlanSelect.value = plan.id;
+    gardenPlanName.value = plan.name;
+    gardenPlanWidth.value = String(plan.width);
+    gardenPlanHeight.value = String(plan.height);
+    document.querySelector('#deleteGardenPlan').disabled = gardenState.plans.length < 2;
+
+    const previousPlantId = planPlantSelect.value;
+    planPlantSelect.replaceChildren(new Option(t(plants.length ? 'choosePlantPlaceholder' : 'noPlantsInLibrary'), ''));
+    plants.forEach((plant) => planPlantSelect.add(new Option(plant.name, plant.id)));
+    planPlantSelect.value = plants.some((plant) => plant.id === previousPlantId) ? previousPlantId : '';
+
+    document.querySelectorAll('[data-plan-tool]').forEach((button) => {
+        const active = button.dataset.planTool === activePlanTool;
+        button.classList.toggle('is-active', active);
+        button.setAttribute('aria-pressed', String(active));
+        if (button.dataset.planTool === 'plant') button.disabled = plants.length === 0;
+    });
+    planCanvas.className = `plan-canvas tool-${activePlanTool}`;
+    planCanvas.width = columns;
+    planCanvas.height = gridRows;
+    drawPlanCanvas(plan, columns, gridRows);
+    renderPlantedRows(plan);
+}
+
+function drawPlanCanvas(plan, columns, gridRows, drawingSurfaceOverride = null) {
+    const surface = drawingSurfaceOverride || unpackSurface(plan.surface, columns * gridRows);
+    const pixels = planContext.createImageData(columns, gridRows);
+    const surfaceColors = [[153, 179, 124, 255], [56, 76, 57, 255], [211, 190, 151, 255]];
+    for (let index = 0; index < surface.length; index += 1) {
+        const offset = index * 4;
+        const color = surfaceColors[surface[index]];
+        pixels.data[offset] = color[0];
+        pixels.data[offset + 1] = color[1];
+        pixels.data[offset + 2] = color[2];
+        pixels.data[offset + 3] = color[3];
+    }
+    planContext.putImageData(pixels, 0, 0);
+
+    planContext.save();
+    planContext.strokeStyle = 'rgba(255, 255, 255, 0.28)';
+    planContext.lineWidth = 0.55;
+    for (let column = GRID_CELLS_PER_METER; column < columns; column += GRID_CELLS_PER_METER) {
+        planContext.beginPath();
+        planContext.moveTo(column, 0);
+        planContext.lineTo(column, gridRows);
+        planContext.stroke();
+    }
+    for (let row = GRID_CELLS_PER_METER; row < gridRows; row += GRID_CELLS_PER_METER) {
+        planContext.beginPath();
+        planContext.moveTo(0, row);
+        planContext.lineTo(columns, row);
+        planContext.stroke();
+    }
+
+    for (const placement of plan.placements) {
+        const centerX = placement.x * GRID_CELLS_PER_METER;
+        const centerY = placement.y * GRID_CELLS_PER_METER;
+        const radius = Math.max(placement.diameter / 100 * GRID_CELLS_PER_METER / 2, 1.5);
+        planContext.beginPath();
+        planContext.arc(centerX, centerY, radius, 0, Math.PI * 2);
+        planContext.fillStyle = placement.color;
+        planContext.fill();
+        planContext.lineWidth = Math.max(0.8, radius * 0.08);
+        planContext.strokeStyle = '#fffefa';
+        planContext.stroke();
+        if (placement.id === selectedPlacementId) {
+            planContext.beginPath();
+            planContext.arc(centerX, centerY, radius + 2.2, 0, Math.PI * 2);
+            planContext.lineWidth = 1.4;
+            planContext.strokeStyle = '#111';
+            planContext.stroke();
+        }
+    }
+    planContext.restore();
+}
+
+function renderPlantedRows(plan) {
+    plantedRows.innerHTML = plan.placements.map((placement) => `
+        <tr class="${placement.id === selectedPlacementId ? 'is-selected' : ''}">
+            <td><button class="planted-select" type="button" data-select-placement="${placement.id}" aria-pressed="${placement.id === selectedPlacementId}" aria-label="${t('selectPlacedPlant', { name: escapeHtml(placement.name) })}"><i style="background:${placement.color}"></i><span>${escapeHtml(placement.name)}</span></button></td>
+            <td>${t('planPosition', { x: formatNumber(placement.x), y: formatNumber(placement.y) })}</td>
+            <td><button class="icon-button delete" type="button" data-remove-placement="${placement.id}" aria-label="${t('removePlacedPlant', { name: escapeHtml(placement.name) })}" title="${t('removePlacedPlant', { name: escapeHtml(placement.name) })}">×</button></td>
+        </tr>`).join('');
+    document.querySelector('#plantedCount').textContent = String(plan.placements.length);
+    document.querySelector('#plantedEmpty').hidden = plan.placements.length > 0;
+}
+
+function schedulePlanRender() {
+    if (planRenderFrame !== null) return;
+    planRenderFrame = requestAnimationFrame(() => {
+        planRenderFrame = null;
+        const plan = getCurrentGardenPlan();
+        const { columns, rows: gridRows } = gardenGridSize(plan);
+        drawPlanCanvas(plan, columns, gridRows, drawingSurface);
+    });
+}
+
+function pointOnPlan(event) {
+    const plan = getCurrentGardenPlan();
+    const { columns, rows: gridRows } = gardenGridSize(plan);
+    const bounds = planCanvas.getBoundingClientRect();
+    return {
+        column: Math.max(0, Math.min(columns - 1, Math.floor((event.clientX - bounds.left) / bounds.width * columns))),
+        row: Math.max(0, Math.min(gridRows - 1, Math.floor((event.clientY - bounds.top) / bounds.height * gridRows))),
+    };
+}
+
+function drawOutlineSegment(plan, surface, start, end, surfaceValue = 1) {
+    const { columns, rows: gridRows } = gardenGridSize(plan);
+    const distance = Math.max(Math.abs(end.column - start.column), Math.abs(end.row - start.row));
+    const steps = Math.max(1, distance * 2);
+    for (let step = 0; step <= steps; step += 1) {
+        const ratio = step / steps;
+        const centerX = Math.round(start.column + (end.column - start.column) * ratio);
+        const centerY = Math.round(start.row + (end.row - start.row) * ratio);
+        for (let offsetY = -1; offsetY <= 1; offsetY += 1) {
+            for (let offsetX = -1; offsetX <= 1; offsetX += 1) {
+                const column = centerX + offsetX;
+                const row = centerY + offsetY;
+                if (column >= 0 && column < columns && row >= 0 && row < gridRows) {
+                    surface[cellIndex(column, row, columns)] = surfaceValue;
+                }
+            }
+        }
+    }
+}
+
+function cellIndex(column, row, columns) {
+    return row * columns + column;
+}
+
+function fillFootpath(plan, column, row) {
+    const { columns, rows: gridRows } = gardenGridSize(plan);
+    const surface = unpackSurface(plan.surface, columns * gridRows);
+    const startIndex = cellIndex(column, row, columns);
+    const originalValue = surface[startIndex];
+    if (originalValue === 1) return false;
+    const replacementValue = originalValue === 0 ? 2 : 0;
+    const queue = new Int32Array(surface.length);
+    let head = 0;
+    let tail = 0;
+    queue[tail++] = startIndex;
+    surface[startIndex] = replacementValue;
+    while (head < tail) {
+        const index = queue[head++];
+        const neighbors = [index - columns, index + columns, index - 1, index + 1];
+        for (let direction = 0; direction < neighbors.length; direction += 1) {
+            const neighbor = neighbors[direction];
+            if (neighbor < 0 || neighbor >= surface.length
+                || direction === 2 && index % columns === 0
+                || direction === 3 && index % columns === columns - 1
+                || surface[neighbor] !== originalValue) continue;
+            surface[neighbor] = replacementValue;
+            queue[tail++] = neighbor;
+        }
+    }
+    plan.surface = packSurface(surface);
+    return true;
+}
+
+function saveCurrentGardenPlan() {
+    if (!persistGardenState()) return false;
+    renderGardenPlan();
+    return true;
+}
+
 function validateBackup(backup) {
     if (backup?.format !== BACKUP_FORMAT || backup.version !== BACKUP_VERSION
         || !Array.isArray(backup.data?.plants) || !['de', 'en'].includes(backup.data.language)) {
@@ -161,7 +491,13 @@ function validateBackup(backup) {
         throw new Error('Duplicate plant IDs');
     }
 
-    return { plants: importedPlants, language: backup.data.language };
+    const importedGarden = backup.data.gardenPlans
+        ? normalizeGardenState(backup.data.gardenPlans)
+        : (() => {
+            const plan = createGardenPlan();
+            return { selectedId: plan.id, plans: [plan] };
+        })();
+    return { plants: importedPlants, language: backup.data.language, gardenPlans: importedGarden };
 }
 
 function showBackupMessage(key) {
@@ -179,7 +515,7 @@ function exportBackup() {
         format: BACKUP_FORMAT,
         version: BACKUP_VERSION,
         exportedAt: new Date().toISOString(),
-        data: { plants, language: currentLanguage },
+        data: { plants, language: currentLanguage, gardenPlans: gardenState },
     };
     const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
@@ -198,19 +534,23 @@ async function importBackup(file) {
         const imported = validateBackup(parsed);
         const oldPlants = localStorage.getItem(STORAGE_KEY);
         const oldLanguage = localStorage.getItem(LANGUAGE_KEY);
+        const oldGardenPlans = localStorage.getItem(GARDEN_PLANS_STORAGE_KEY);
         try {
             localStorage.setItem(STORAGE_KEY, JSON.stringify(imported.plants));
             localStorage.setItem(LANGUAGE_KEY, imported.language);
+            localStorage.setItem(GARDEN_PLANS_STORAGE_KEY, JSON.stringify(imported.gardenPlans));
         } catch (error) {
             try {
                 oldPlants === null ? localStorage.removeItem(STORAGE_KEY) : localStorage.setItem(STORAGE_KEY, oldPlants);
                 oldLanguage === null ? localStorage.removeItem(LANGUAGE_KEY) : localStorage.setItem(LANGUAGE_KEY, oldLanguage);
+                oldGardenPlans === null ? localStorage.removeItem(GARDEN_PLANS_STORAGE_KEY) : localStorage.setItem(GARDEN_PLANS_STORAGE_KEY, oldGardenPlans);
             } catch {
             }
             throw error;
         }
         plants = imported.plants;
         currentLanguage = imported.language;
+        gardenState = imported.gardenPlans;
         editingId = null;
         form.reset();
         colorInput.value = '#d66e59';
@@ -276,6 +616,7 @@ function renderPlants() {
     document.querySelector('#collectionCount').textContent = String(count);
     emptyState.classList.toggle('is-visible', count === 0);
     renderSeason();
+    renderGardenPlan();
 }
 
 function renderSeason() {
@@ -385,6 +726,101 @@ colorInput.addEventListener('input', () => {
     document.querySelector('#colorValue').textContent = colorInput.value.toUpperCase();
 });
 
+document.querySelectorAll('[data-plan-tool]').forEach((button) => {
+    button.addEventListener('click', () => {
+        if (button.disabled) return;
+        activePlanTool = button.dataset.planTool;
+        renderGardenPlan();
+    });
+});
+
+planCanvas.addEventListener('pointerdown', (event) => {
+    if (event.button !== 0) return;
+    const plan = getCurrentGardenPlan();
+    const point = pointOnPlan(event);
+    if (activePlanTool === 'plant') {
+        placeSelectedPlant(plan, point);
+        return;
+    }
+    if (activePlanTool === 'bucket') {
+        const changed = fillFootpath(plan, point.column, point.row);
+        if (changed) saveCurrentGardenPlan();
+        return;
+    }
+    drawingPointer = event.pointerId;
+    drawingSurface = unpackSurface(plan.surface, planCanvas.width * planCanvas.height);
+    lastDrawPoint = point;
+    planCanvas.setPointerCapture(event.pointerId);
+    drawOutlineSegment(plan, drawingSurface, point, point, activePlanTool === 'eraser' ? 0 : 1);
+    schedulePlanRender();
+});
+
+planCanvas.addEventListener('pointermove', (event) => {
+    if (drawingPointer !== event.pointerId || !lastDrawPoint || !drawingSurface) return;
+    const nextPoint = pointOnPlan(event);
+    drawOutlineSegment(getCurrentGardenPlan(), drawingSurface, lastDrawPoint, nextPoint, activePlanTool === 'eraser' ? 0 : 1);
+    lastDrawPoint = nextPoint;
+    schedulePlanRender();
+});
+
+planCanvas.addEventListener('pointerup', finishOutlineDrawing);
+planCanvas.addEventListener('pointercancel', finishOutlineDrawing);
+planCanvas.addEventListener('contextmenu', (event) => event.preventDefault());
+
+plantedRows.addEventListener('click', (event) => {
+    const selectButton = event.target.closest('[data-select-placement]');
+    const removeButton = event.target.closest('[data-remove-placement]');
+    const plan = getCurrentGardenPlan();
+    if (selectButton) {
+        selectedPlacementId = selectButton.dataset.selectPlacement;
+        renderGardenPlan();
+    }
+    if (removeButton) {
+        plan.placements = plan.placements.filter((placement) => placement.id !== removeButton.dataset.removePlacement);
+        if (selectedPlacementId === removeButton.dataset.removePlacement) selectedPlacementId = null;
+        saveCurrentGardenPlan();
+    }
+});
+
+gardenPlanSelect.addEventListener('change', () => {
+    gardenState.selectedId = gardenPlanSelect.value;
+    selectedPlacementId = null;
+    saveCurrentGardenPlan();
+});
+
+gardenPlanName.addEventListener('change', () => {
+    const plan = getCurrentGardenPlan();
+    plan.name = gardenPlanName.value.trim() || t('defaultPlanName');
+    saveCurrentGardenPlan();
+});
+
+gardenPlanWidth.addEventListener('change', resizeCurrentGardenPlan);
+gardenPlanHeight.addEventListener('change', resizeCurrentGardenPlan);
+
+document.querySelector('#newGardenPlan').addEventListener('click', () => {
+    let planName = t('newPlanName', { number: gardenState.plans.length + 1 });
+    let number = gardenState.plans.length + 1;
+    while (gardenState.plans.some((plan) => plan.name === planName)) {
+        number += 1;
+        planName = t('newPlanName', { number });
+    }
+    const plan = createGardenPlan(planName);
+    gardenState.plans.push(plan);
+    gardenState.selectedId = plan.id;
+    selectedPlacementId = null;
+    saveCurrentGardenPlan();
+});
+
+document.querySelector('#deleteGardenPlan').addEventListener('click', () => {
+    if (gardenState.plans.length < 2) return;
+    const plan = getCurrentGardenPlan();
+    if (!window.confirm(t('confirmDeletePlan', { name: plan.name }))) return;
+    gardenState.plans = gardenState.plans.filter((item) => item.id !== plan.id);
+    gardenState.selectedId = gardenState.plans[0].id;
+    selectedPlacementId = null;
+    saveCurrentGardenPlan();
+});
+
 document.querySelectorAll('[role="tab"]').forEach((tab) => {
     tab.addEventListener('click', () => activateTab(tab));
     tab.addEventListener('keydown', (event) => {
@@ -412,7 +848,71 @@ function activateTab(tab) {
 }
 
 applyTranslations();
+persistGardenState();
 
 if ('serviceWorker' in navigator && window.location.protocol !== 'file:') {
     window.addEventListener('load', () => navigator.serviceWorker.register('./service-worker.js').catch(() => { }));
+}
+
+function resizeCurrentGardenPlan() {
+    const plan = getCurrentGardenPlan();
+    const width = Number(gardenPlanWidth.value);
+    const height = Number(gardenPlanHeight.value);
+    if (!Number.isFinite(width) || !Number.isFinite(height) || width < 1 || height < 1
+        || width > MAX_PLAN_DIMENSION || height > MAX_PLAN_DIMENSION
+        || Math.round(width * GRID_CELLS_PER_METER) * Math.round(height * GRID_CELLS_PER_METER) > 160000) {
+        planMessage.textContent = t('planSizeError');
+        gardenPlanWidth.value = String(plan.width);
+        gardenPlanHeight.value = String(plan.height);
+        return;
+    }
+    if (width === plan.width && height === plan.height) return;
+    const oldSize = gardenGridSize(plan);
+    const oldSurface = unpackSurface(plan.surface, oldSize.columns * oldSize.rows);
+    plan.width = width;
+    plan.height = height;
+    const newSize = gardenGridSize(plan);
+    const newSurface = new Uint8Array(newSize.columns * newSize.rows);
+    const copyColumns = Math.min(oldSize.columns, newSize.columns);
+    const copyRows = Math.min(oldSize.rows, newSize.rows);
+    for (let row = 0; row < copyRows; row += 1) {
+        newSurface.set(oldSurface.subarray(row * oldSize.columns, row * oldSize.columns + copyColumns), row * newSize.columns);
+    }
+    plan.surface = packSurface(newSurface);
+    plan.placements.forEach((placement) => {
+        placement.x = Math.min(placement.x, width);
+        placement.y = Math.min(placement.y, height);
+    });
+    saveCurrentGardenPlan();
+}
+
+function finishOutlineDrawing() {
+    if (drawingPointer === null) return;
+    drawingPointer = null;
+    lastDrawPoint = null;
+    const plan = getCurrentGardenPlan();
+    plan.surface = packSurface(drawingSurface);
+    drawingSurface = null;
+    saveCurrentGardenPlan();
+}
+
+function placeSelectedPlant(plan, point) {
+    const selectedPlant = plants.find((plant) => plant.id === planPlantSelect.value);
+    if (!selectedPlant) {
+        planMessage.textContent = t(plants.length ? 'choosePlantPlaceholder' : 'noPlantsInLibrary');
+        return;
+    }
+    const placement = {
+        id: createId(),
+        plantId: selectedPlant.id,
+        name: selectedPlant.name,
+        diameter: Number(selectedPlant.diameter),
+        height: Number(selectedPlant.height),
+        color: selectedPlant.color,
+        x: (point.column + 0.5) / GRID_CELLS_PER_METER,
+        y: (point.row + 0.5) / GRID_CELLS_PER_METER,
+    };
+    plan.placements.push(placement);
+    selectedPlacementId = placement.id;
+    saveCurrentGardenPlan();
 }

@@ -603,6 +603,261 @@ td {
     font-size: 12px;
 }
 
+.plan-heading {
+    min-height: 112px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 13px 0 18px;
+}
+
+.plan-picker {
+    display: flex;
+    align-items: end;
+    gap: 8px;
+}
+
+.plan-select-field {
+    width: 180px;
+}
+
+.plan-select-field select,
+.plan-controls input,
+.plant-picker select {
+    width: 100%;
+    height: 36px;
+    padding: 0 9px;
+    border: 1px solid #dce4db;
+    border-radius: 3px;
+    background: #fffefa;
+    color: var(--ink);
+    font-size: 12px;
+}
+
+.plan-picker .button {
+    min-height: 36px;
+    white-space: nowrap;
+}
+
+.plan-picker .button:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+
+.plan-editor {
+    border-top: 1px solid #ccd9cd;
+}
+
+.plan-controls {
+    min-height: 76px;
+    display: flex;
+    align-items: end;
+    gap: 12px;
+    padding: 15px 0 13px;
+}
+
+.plan-name-field {
+    flex: 1 1 240px;
+    max-width: 360px;
+}
+
+.plan-size-field {
+    width: 100px;
+}
+
+.dimension-times {
+    padding-bottom: 10px;
+    color: #91a096;
+    font-size: 15px;
+}
+
+.plan-message {
+    min-height: 14px;
+    margin: 0 0 10px auto;
+    color: #a64e41;
+    font-size: 11px;
+}
+
+.plan-toolbar {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: 18px;
+    padding: 12px 0;
+    border-top: 1px solid #e0e7df;
+}
+
+.tool-group {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.tool-button {
+    min-height: 38px;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 0 11px;
+    border: 1px solid transparent;
+    border-radius: 3px;
+    background: transparent;
+    color: #63756a;
+    cursor: pointer;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.tool-button svg {
+    width: 17px;
+    height: 17px;
+}
+
+.tool-button:hover {
+    background: #eef3eb;
+}
+
+.tool-button.is-active {
+    border-color: #b9cbbb;
+    background: #e8f0e5;
+    color: var(--green-dark);
+}
+
+.tool-button:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+
+.plant-picker {
+    width: min(240px, 40%);
+}
+
+.plan-canvas-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1.5fr) minmax(260px, 0.8fr);
+    align-items: start;
+    gap: 26px;
+    padding: 4px 0 24px;
+}
+
+.plan-canvas-frame {
+    width: 100%;
+    overflow: hidden;
+    border: 1px solid #c8d4c5;
+    background: #99b37c;
+    box-shadow: 0 8px 20px rgba(42, 71, 52, 0.08);
+}
+
+.plan-canvas {
+    display: block;
+    width: 100%;
+    height: auto;
+    touch-action: none;
+}
+
+.plan-canvas.tool-pencil {
+    cursor: crosshair;
+}
+
+.plan-canvas.tool-bucket {
+    cursor: cell;
+}
+
+.plan-canvas.tool-eraser {
+    cursor: crosshair;
+}
+
+.plan-canvas.tool-plant {
+    cursor: copy;
+}
+
+.planted-heading {
+    margin: 3px 0 13px;
+}
+
+.planted-table-wrap {
+    border-top: 1px solid #cfdace;
+}
+
+.planted-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+}
+
+.planted-table th {
+    height: 36px;
+    padding: 0 8px;
+    color: #86948b;
+    font-size: 9px;
+}
+
+.planted-table th:first-child,
+.planted-table td:first-child {
+    padding-left: 2px;
+}
+
+.planted-table td {
+    height: 45px;
+    padding: 5px 8px;
+    border-top: 1px solid #dce4dc;
+    color: #63736a;
+    font-size: 10px;
+    white-space: nowrap;
+}
+
+.planted-select {
+    max-width: 100%;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 4px 3px;
+    overflow: hidden;
+    border: 0;
+    background: transparent;
+    color: var(--ink);
+    cursor: pointer;
+    font: inherit;
+    font-weight: 700;
+    text-align: left;
+    text-overflow: ellipsis;
+}
+
+.planted-select span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.planted-select i {
+    width: 10px;
+    height: 10px;
+    flex: 0 0 10px;
+    border-radius: 50%;
+}
+
+.planted-table tr.is-selected {
+    background: #edf2e9;
+}
+
+.planted-table .icon-button {
+    width: 27px;
+    height: 27px;
+    font-size: 17px;
+}
+
+.planted-empty {
+    margin: 0;
+    padding: 18px 2px;
+    border-bottom: 1px solid #dce4dc;
+    color: #87958c;
+    font-size: 11px;
+}
+
+.planted-empty[hidden] {
+    display: none;
+}
+
 .app-footer {
     display: flex;
     align-items: center;
@@ -683,6 +938,11 @@ td {
     .field-name {
         grid-column: span 1;
     }
+
+    .plan-canvas-layout {
+        grid-template-columns: minmax(0, 1.2fr) minmax(240px, 0.8fr);
+        gap: 18px;
+    }
 }
 
 @media (max-width: 600px) {
@@ -757,6 +1017,18 @@ td {
         min-width: 625px;
     }
 
+    .planted-table {
+        min-width: 0;
+        table-layout: fixed;
+    }
+
+    .planted-table th:last-child,
+    .planted-table td:last-child {
+        width: 36px;
+        padding-right: 2px;
+        padding-left: 2px;
+    }
+
     .season-summary {
         grid-template-columns: 1fr;
     }
@@ -791,6 +1063,78 @@ td {
 
     .season-size {
         display: none;
+    }
+
+    .plan-heading {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 15px;
+        padding: 22px 0 17px;
+    }
+
+    .plan-picker {
+        width: 100%;
+        flex-wrap: wrap;
+    }
+
+    .plan-select-field {
+        width: 100%;
+    }
+
+    .plan-picker .button {
+        flex: 1 1 auto;
+    }
+
+    .plan-controls {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 80px 12px 80px;
+        gap: 9px;
+    }
+
+    .plan-name-field {
+        grid-column: 1 / -1;
+        max-width: none;
+    }
+
+    .plan-size-field {
+        width: 100%;
+    }
+
+    .dimension-times {
+        align-self: end;
+        justify-self: center;
+    }
+
+    .plan-message {
+        grid-column: 1 / -1;
+        margin: 0;
+    }
+
+    .plan-toolbar {
+        align-items: stretch;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .tool-group {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .tool-button {
+        justify-content: center;
+        gap: 5px;
+        padding: 0 5px;
+        font-size: 10px;
+    }
+
+    .plant-picker {
+        width: 100%;
+    }
+
+    .plan-canvas-layout {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 24px;
     }
 
     .app-footer {
