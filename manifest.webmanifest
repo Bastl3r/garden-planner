@@ -1,7 +1,7 @@
 {
     "name": "Garden Planner",
     "short_name": "Garden",
-    "description": "A local-first garden planner for keeping track of your plants.",
+    "description": "Ein lokaler Gartenplaner zur Verwaltung deiner Pflanzen.",
     "start_url": "./",
     "scope": "./",
     "display": "standalone",

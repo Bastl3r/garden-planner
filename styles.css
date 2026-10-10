@@ -18,6 +18,10 @@
     box-sizing: border-box;
 }
 
+html {
+    overflow-x: clip;
+}
+
 body {
     min-width: 320px;
     min-height: 100vh;
@@ -610,6 +614,26 @@ td {
     letter-spacing: 1px;
 }
 
+.language-control {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: #718078;
+    font-size: 10px;
+    font-weight: 600;
+}
+
+.language-control select {
+    min-height: 29px;
+    padding: 0 24px 0 8px;
+    border: 1px solid #d5dfd4;
+    border-radius: 3px;
+    background: #fffefa;
+    color: #35483e;
+    font: inherit;
+    cursor: pointer;
+}
+
 @media (max-width: 900px) {
     .form-grid {
         grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -728,8 +752,16 @@ td {
     }
 
     .app-footer {
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 12px 18px;
         margin-top: 38px;
         font-size: 8px;
+    }
+
+    .language-control {
+        margin-left: auto;
+        font-size: 9px;
     }
 }
 
