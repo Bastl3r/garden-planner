@@ -1,11 +1,11 @@
 <!doctype html>
-<html lang="en">
+<html lang="de">
 
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#f4f7ef" />
-    <meta name="description" content="A local-first garden planner for keeping track of your plants." />
+    <meta id="pageDescription" name="description" content="Ein lokaler Gartenplaner zur Verwaltung deiner Pflanzen." />
     <title>Garden Planner</title>
     <link rel="icon" href="./assets/leaf-mark.svg" type="image/svg+xml" />
     <link rel="manifest" href="./manifest.webmanifest" />
@@ -14,26 +14,28 @@
 
 <body>
     <header class="site-header">
-        <a class="brand" href="/" aria-label="Garden Planner home">
+        <a class="brand" href="/" aria-label="Garden Planner" data-i18n-aria-label="brandLabel">
             <img src="./assets/leaf-mark.svg" alt="" width="42" height="42" />
             <span>Garden <strong>Planner</strong></span>
         </a>
-        <span class="local-indicator"><span aria-hidden="true"></span> Saved on this device</span>
+        <span class="local-indicator"><span aria-hidden="true"></span><span data-i18n="savedOnDevice">Lokal auf diesem
+                Gerät gespeichert</span></span>
     </header>
 
     <main class="app-shell">
-        <nav class="tabs" role="tablist" aria-label="Garden views">
+        <nav class="tabs" role="tablist" aria-label="Gartenansichten" data-i18n-aria-label="gardenViews">
             <button class="tab is-active" id="plantsTab" type="button" role="tab" aria-selected="true"
-                aria-controls="plantsPanel" data-tab="plantsPanel">Plant library</button>
+                aria-controls="plantsPanel" data-tab="plantsPanel" data-i18n="plantLibrary">Pflanzenübersicht</button>
             <button class="tab" id="seasonTab" type="button" role="tab" aria-selected="false"
-                aria-controls="seasonPanel" data-tab="seasonPanel" tabindex="-1">In season</button>
+                aria-controls="seasonPanel" data-tab="seasonPanel" tabindex="-1" data-i18n="inSeason">Gerade in
+                Blüte</button>
         </nav>
 
         <section class="tab-panel" id="plantsPanel" role="tabpanel" aria-labelledby="plantsTab">
             <div class="page-heading">
                 <div>
-                    <p class="eyebrow">YOUR GARDEN</p>
-                    <h1>Plant library</h1>
+                    <p class="eyebrow" data-i18n="yourGarden">DEIN GARTEN</p>
+                    <h1 data-i18n="plantLibrary">Pflanzenübersicht</h1>
                 </div>
                 <p class="plant-count" id="plantCount">0 plants</p>
             </div>
@@ -41,48 +43,51 @@
             <section class="form-panel" aria-labelledby="formTitle">
                 <div class="section-heading">
                     <div>
-                        <p class="eyebrow" id="formEyebrow">NEW ADDITION</p>
-                        <h2 id="formTitle">Add a plant</h2>
+                        <p class="eyebrow" id="formEyebrow" data-i18n="newAddition">NEUZUGANG</p>
+                        <h2 id="formTitle" data-i18n="addPlant">Pflanze hinzufügen</h2>
                     </div>
                     <span class="form-mark" aria-hidden="true">+</span>
                 </div>
                 <form id="plantForm">
                     <div class="form-grid">
                         <label class="field field-name">
-                            <span>Name</span>
-                            <input id="name" name="name" type="text" placeholder="e.g. French lavender" maxlength="80"
-                                required />
+                            <span data-i18n="name">Name</span>
+                            <input id="name" name="name" type="text" placeholder="z. B. Echter Lavendel"
+                                data-i18n-placeholder="namePlaceholder" maxlength="80" required />
                         </label>
                         <label class="field">
-                            <span>Diameter <small>cm</small></span>
+                            <span><span data-i18n="diameter">Durchmesser</span> <small>cm</small></span>
                             <input id="diameter" name="diameter" type="number" min="0" step="0.1" placeholder="45"
                                 required />
                         </label>
                         <label class="field">
-                            <span>Height <small>m</small></span>
+                            <span><span data-i18n="height">Höhe</span> <small>m</small></span>
                             <input id="height" name="height" type="number" min="0" step="0.01" placeholder="0.6"
                                 required />
                         </label>
                         <label class="field color-field">
-                            <span>Blossom color</span>
+                            <span data-i18n="blossomColor">Blütenfarbe</span>
                             <span class="color-control"><input id="color" name="color" type="color" value="#d66e59"
-                                    aria-label="Blossom color" /><span id="colorValue">#D66E59</span></span>
+                                    aria-label="Blütenfarbe" data-i18n-aria-label="blossomColor" /><span
+                                    id="colorValue">#D66E59</span></span>
                         </label>
                         <label class="field">
-                            <span>Blossom begins</span>
+                            <span data-i18n="blossomBegins">Blüte beginnt</span>
                             <input id="blossomStart" name="blossomStart" type="month" required />
                         </label>
                         <label class="field">
-                            <span>Blossom ends</span>
+                            <span data-i18n="blossomEnds">Blüte endet</span>
                             <input id="blossomEnd" name="blossomEnd" type="month" required />
                         </label>
                     </div>
                     <div class="form-actions">
                         <p class="form-message" id="formMessage" aria-live="polite"></p>
                         <div class="action-buttons">
-                            <button class="button button-quiet is-hidden" id="cancelEdit" type="button">Cancel</button>
+                            <button class="button button-quiet is-hidden" id="cancelEdit" type="button"
+                                data-i18n="cancel">Abbrechen</button>
                             <button class="button button-primary" id="savePlant" type="submit"><span
-                                    aria-hidden="true">+</span> Add plant</button>
+                                    aria-hidden="true">+</span><span class="button-label" data-i18n="addPlant">Pflanze
+                                    hinzufügen</span></button>
                         </div>
                     </div>
                 </form>
@@ -91,8 +96,8 @@
             <section class="collection" aria-labelledby="collectionTitle">
                 <div class="section-heading collection-heading">
                     <div>
-                        <p class="eyebrow">GROWING LIST</p>
-                        <h2 id="collectionTitle">Your plants</h2>
+                        <p class="eyebrow" data-i18n="growingList">PFLANZENLISTE</p>
+                        <h2 id="collectionTitle" data-i18n="yourPlants">Deine Pflanzen</h2>
                     </div>
                     <span class="collection-count" id="collectionCount">0</span>
                 </div>
@@ -100,18 +105,18 @@
                     <table>
                         <thead>
                             <tr>
-                                <th scope="col">Plant</th>
-                                <th scope="col">Size</th>
-                                <th scope="col">Blossom</th>
-                                <th scope="col">Color</th>
-                                <th scope="col"><span class="sr-only">Actions</span></th>
+                                <th scope="col" data-i18n="plant">Pflanze</th>
+                                <th scope="col" data-i18n="size">Größe</th>
+                                <th scope="col" data-i18n="blossom">Blüte</th>
+                                <th scope="col" data-i18n="color">Farbe</th>
+                                <th scope="col"><span class="sr-only" data-i18n="actions">Aktionen</span></th>
                             </tr>
                         </thead>
                         <tbody id="plantRows"></tbody>
                     </table>
                     <div class="empty-state" id="emptyState">
                         <span class="empty-icon" aria-hidden="true">✳</span>
-                        <p>No plants in your library yet.</p>
+                        <p data-i18n="emptyPlants">Noch keine Pflanzen in deiner Liste.</p>
                     </div>
                 </div>
             </section>
@@ -120,8 +125,8 @@
         <section class="tab-panel is-hidden" id="seasonPanel" role="tabpanel" aria-labelledby="seasonTab" hidden>
             <div class="page-heading">
                 <div>
-                    <p class="eyebrow">THE GARDEN, RIGHT NOW</p>
-                    <h1>In season</h1>
+                    <p class="eyebrow" data-i18n="gardenRightNow">DER GARTEN, JETZT</p>
+                    <h1 data-i18n="seasonOverview">Saisonübersicht</h1>
                 </div>
                 <p class="season-month" id="seasonMonth"></p>
             </div>
@@ -129,15 +134,23 @@
             <section class="collection season-collection" aria-labelledby="seasonListTitle">
                 <div class="section-heading collection-heading">
                     <div>
-                        <p class="eyebrow">BLOSSOM WATCH</p>
-                        <h2 id="seasonListTitle">Flowering this month</h2>
+                        <p class="eyebrow" data-i18n="blossomWatch">BLÜTENKALENDER</p>
+                        <h2 id="seasonListTitle" data-i18n="floweringThisMonth">Blüte in diesem Monat</h2>
                     </div>
                 </div>
                 <div class="season-list" id="seasonList"></div>
             </section>
         </section>
-        <footer class="app-footer"><span>GARDEN PLANNER</span><span id="storageNote">Your collection stays in this
-                browser.</span></footer>
+        <footer class="app-footer">
+            <span data-i18n="appNameFooter">GARDEN PLANNER</span>
+            <span id="storageNote" data-i18n="storageNote">Deine Sammlung bleibt in diesem Browser.</span>
+            <label class="language-control"><span data-i18n="language">Sprache</span>
+                <select id="languageSelect" aria-label="Sprache auswählen" data-i18n-aria-label="selectLanguage">
+                    <option value="de">Deutsch</option>
+                    <option value="en">English</option>
+                </select>
+            </label>
+        </footer>
     </main>
 
     <script src="./app.js" defer></script>
