@@ -605,7 +605,10 @@ td {
 
 .app-footer {
     display: flex;
+    align-items: center;
     justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px 18px;
     margin: 49px 0 24px;
     padding-top: 13px;
     border-top: 1px solid #dce4dc;
@@ -636,6 +639,40 @@ td {
     color: #35483e;
     font: inherit;
     cursor: pointer;
+}
+
+.backup-actions {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.footer-button {
+    min-height: 29px;
+    padding: 0 9px;
+    border: 1px solid #d5dfd4;
+    border-radius: 3px;
+    background: #fffefa;
+    color: #35483e;
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.footer-button:hover {
+    border-color: #9aafa0;
+    background: #f5f8f2;
+}
+
+.footer-button:focus-visible,
+.language-control select:focus-visible {
+    outline: 3px solid #82a7b8;
+    outline-offset: 2px;
+}
+
+.backup-message {
+    color: var(--green);
+    font-size: 10px;
 }
 
 @media (max-width: 900px) {
@@ -757,11 +794,14 @@ td {
     }
 
     .app-footer {
-        flex-wrap: wrap;
-        align-items: center;
         gap: 12px 18px;
         margin-top: 38px;
         font-size: 8px;
+    }
+
+    .backup-message {
+        order: 1;
+        flex-basis: 100%;
     }
 
     .language-control {

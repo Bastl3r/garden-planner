@@ -1,5 +1,7 @@
 const STORAGE_KEY = 'garden-planner-plants-v1';
 const LANGUAGE_KEY = 'garden-planner-language';
+const BACKUP_FORMAT = 'garden-planner-backup';
+const BACKUP_VERSION = 1;
 const translations = {
     de: {
         brandLabel: 'Garden Planner Startseite', savedOnDevice: 'Lokal auf diesem Gerät gespeichert', gardenViews: 'Gartenansichten',
@@ -8,7 +10,9 @@ const translations = {
         blossomColor: 'Blütenfarbe', blossomBegins: 'Blüte beginnt', blossomEnds: 'Blüte endet', cancel: 'Abbrechen', growingList: 'PFLANZENLISTE',
         yourPlants: 'Deine Pflanzen', plant: 'Pflanze', size: 'Größe', blossom: 'Blüte', color: 'Farbe', actions: 'Aktionen',
         emptyPlants: 'Noch keine Pflanzen in deiner Liste.', gardenRightNow: 'DER GARTEN, JETZT', blossomWatch: 'BLÜTENKALENDER',
-        floweringThisMonth: 'Blüte in diesem Monat', monthPlaceholder: 'Monat auswählen', appNameFooter: 'GARDEN PLANNER', storageNote: 'Deine Sammlung bleibt in diesem Browser.',
+        floweringThisMonth: 'Blüte in diesem Monat', monthPlaceholder: 'Monat auswählen', exportBackup: 'Exportieren', importBackup: 'Importieren',
+        exportSuccess: 'Sicherung wurde heruntergeladen.', importSuccess: 'Sicherung wurde importiert.', importConfirm: 'Der Import ersetzt deine gespeicherten Pflanzen und Sprache. Fortfahren?',
+        importError: 'Diese Sicherungsdatei ist ungültig oder kann nicht gelesen werden.', appNameFooter: 'GARDEN PLANNER', storageNote: 'Deine Sammlung bleibt in diesem Browser.',
         language: 'Sprache', selectLanguage: 'Sprache auswählen', editPlant: '{name} bearbeiten', deletePlant: '{name} löschen',
         deleteConfirm: '{name} aus deiner Pflanzenliste löschen?', saveChanges: 'Änderungen speichern', updateDetails: 'DETAILS ÄNDERN',
         couldNotSave: 'Speichern nicht möglich. Der Browserspeicher ist möglicherweise voll.', blossomDateError: 'Das Blütenende muss im oder nach dem Startmonat liegen.',
@@ -23,7 +27,9 @@ const translations = {
         blossomColor: 'Blossom color', blossomBegins: 'Blossom begins', blossomEnds: 'Blossom ends', cancel: 'Cancel', growingList: 'GROWING LIST',
         yourPlants: 'Your plants', plant: 'Plant', size: 'Size', blossom: 'Blossom', color: 'Color', actions: 'Actions',
         emptyPlants: 'No plants in your library yet.', gardenRightNow: 'THE GARDEN, RIGHT NOW', blossomWatch: 'BLOSSOM WATCH',
-        floweringThisMonth: 'Flowering this month', monthPlaceholder: 'Choose month', appNameFooter: 'GARDEN PLANNER', storageNote: 'Your collection stays in this browser.',
+        floweringThisMonth: 'Flowering this month', monthPlaceholder: 'Choose month', exportBackup: 'Export', importBackup: 'Import',
+        exportSuccess: 'Backup downloaded.', importSuccess: 'Backup imported.', importConfirm: 'Importing replaces your saved plants and language. Continue?',
+        importError: 'This backup file is invalid or could not be read.', appNameFooter: 'GARDEN PLANNER', storageNote: 'Your collection stays in this browser.',
         language: 'Language', selectLanguage: 'Choose language', editPlant: 'Edit {name}', deletePlant: 'Delete {name}',
         deleteConfirm: 'Delete {name} from your library?', saveChanges: 'Save changes', updateDetails: 'UPDATE DETAILS',
         couldNotSave: 'Could not save. Browser storage may be full.', blossomDateError: 'Blossom end must be in or after the start month.',
@@ -54,6 +60,8 @@ const cancelButton = document.querySelector('#cancelEdit');
 const formMessage = document.querySelector('#formMessage');
 const colorInput = document.querySelector('#color');
 const languageSelect = document.querySelector('#languageSelect');
+const backupFileInput = document.querySelector('#backupFile');
+const backupMessage = document.querySelector('#backupMessage');
 let plants = readPlants();
 let editingId = null;
 
@@ -121,6 +129,98 @@ function readPlants() {
 
 function normalizeMonth(value) {
     return typeof value === 'string' ? value.match(/^(?:\d{4}-)?(0[1-9]|1[0-2])$/)?.[1] || '' : '';
+}
+
+function validateBackup(backup) {
+    if (backup?.format !== BACKUP_FORMAT || backup.version !== BACKUP_VERSION
+        || !Array.isArray(backup.data?.plants) || !['de', 'en'].includes(backup.data.language)) {
+        throw new Error('Unsupported backup format');
+    }
+
+    const importedPlants = backup.data.plants.map((plant) => {
+        const diameter = typeof plant?.diameter === 'number' || typeof plant?.diameter === 'string' && plant.diameter.trim()
+            ? Number(plant.diameter) : Number.NaN;
+        const height = typeof plant?.height === 'number' || typeof plant?.height === 'string' && plant.height.trim()
+            ? Number(plant.height) : Number.NaN;
+        const normalized = {
+            id: plant?.id,
+            name: typeof plant?.name === 'string' ? plant.name.trim() : '',
+            diameter,
+            height,
+            color: plant?.color,
+            blossomStart: normalizeMonth(plant?.blossomStart),
+            blossomEnd: normalizeMonth(plant?.blossomEnd),
+        };
+        if (!normalized.id || !Number.isFinite(diameter) || diameter < 0 || !Number.isFinite(height) || height < 0
+            || !normalized.name || !isPlant(normalized)) {
+            throw new Error('Invalid plant record');
+        }
+        return normalized;
+    });
+    if (new Set(importedPlants.map((plant) => plant.id)).size !== importedPlants.length) {
+        throw new Error('Duplicate plant IDs');
+    }
+
+    return { plants: importedPlants, language: backup.data.language };
+}
+
+function showBackupMessage(key) {
+    backupMessage.textContent = t(key);
+    backupMessage.hidden = false;
+}
+
+function clearBackupMessage() {
+    backupMessage.textContent = '';
+    backupMessage.hidden = true;
+}
+
+function exportBackup() {
+    const backup = {
+        format: BACKUP_FORMAT,
+        version: BACKUP_VERSION,
+        exportedAt: new Date().toISOString(),
+        data: { plants, language: currentLanguage },
+    };
+    const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `garden-planner-backup-${new Date().toISOString().slice(0, 10)}.json`;
+    link.click();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+    showBackupMessage('exportSuccess');
+}
+
+async function importBackup(file) {
+    if (!file || !window.confirm(t('importConfirm'))) return;
+    try {
+        const parsed = JSON.parse(await file.text());
+        const imported = validateBackup(parsed);
+        const oldPlants = localStorage.getItem(STORAGE_KEY);
+        const oldLanguage = localStorage.getItem(LANGUAGE_KEY);
+        try {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(imported.plants));
+            localStorage.setItem(LANGUAGE_KEY, imported.language);
+        } catch (error) {
+            try {
+                oldPlants === null ? localStorage.removeItem(STORAGE_KEY) : localStorage.setItem(STORAGE_KEY, oldPlants);
+                oldLanguage === null ? localStorage.removeItem(LANGUAGE_KEY) : localStorage.setItem(LANGUAGE_KEY, oldLanguage);
+            } catch {
+            }
+            throw error;
+        }
+        plants = imported.plants;
+        currentLanguage = imported.language;
+        editingId = null;
+        form.reset();
+        colorInput.value = '#d66e59';
+        document.querySelector('#colorValue').textContent = colorInput.value.toUpperCase();
+        formMessage.textContent = '';
+        applyTranslations();
+        showBackupMessage('importSuccess');
+    } catch {
+        showBackupMessage('importError');
+    }
 }
 
 function isPlant(value) {
@@ -265,6 +365,12 @@ rows.addEventListener('click', (event) => {
 });
 
 cancelButton.addEventListener('click', resetForm);
+document.querySelector('#exportBackup').addEventListener('click', exportBackup);
+document.querySelector('#importBackup').addEventListener('click', () => backupFileInput.click());
+backupFileInput.addEventListener('change', async () => {
+    await importBackup(backupFileInput.files[0]);
+    backupFileInput.value = '';
+});
 languageSelect.addEventListener('change', () => {
     currentLanguage = languageSelect.value === 'en' ? 'en' : 'de';
     try {
@@ -272,6 +378,7 @@ languageSelect.addEventListener('change', () => {
     } catch {
     }
     formMessage.textContent = '';
+    clearBackupMessage();
     applyTranslations();
 });
 colorInput.addEventListener('input', () => {

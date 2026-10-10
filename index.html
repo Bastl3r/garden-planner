@@ -148,6 +148,14 @@
         <footer class="app-footer">
             <span data-i18n="appNameFooter">GARDEN PLANNER</span>
             <span id="storageNote" data-i18n="storageNote">Deine Sammlung bleibt in diesem Browser.</span>
+            <div class="backup-actions">
+                <button class="footer-button" id="exportBackup" type="button"
+                    data-i18n="exportBackup">Exportieren</button>
+                <button class="footer-button" id="importBackup" type="button"
+                    data-i18n="importBackup">Importieren</button>
+                <input id="backupFile" type="file" accept=".json,application/json" hidden />
+            </div>
+            <span class="backup-message" id="backupMessage" aria-live="polite" hidden></span>
             <label class="language-control"><span data-i18n="language">Sprache</span>
                 <select id="languageSelect" aria-label="Sprache auswählen" data-i18n-aria-label="selectLanguage">
                     <option value="de">Deutsch</option>
