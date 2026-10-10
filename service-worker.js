@@ -1,6 +1,16 @@
-const CACHE_NAME = 'garden-planner-shell-v1';
+const CACHE_NAME = 'garden-planner-shell-v9';
 const APP_BASE = new URL('./', self.location.href);
-const APP_SHELL = ['', 'index.html', 'styles.css', 'app.js', 'manifest.webmanifest', 'assets/leaf-mark.svg']
+const APP_SHELL = [
+    '',
+    'index.html',
+    'styles.css',
+    'app.js',
+    'preview.js',
+    'manifest.webmanifest',
+    'assets/leaf-mark.svg',
+    'vendor/three.module.js',
+    'vendor/three.core.js',
+]
     .map((path) => new URL(path, APP_BASE).href);
 
 self.addEventListener('install', (event) => {

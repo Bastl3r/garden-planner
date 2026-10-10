@@ -1,0 +1,13 @@
+{
+    "name": "garden-planner",
+    "version": "1.0.0",
+    "private": true,
+    "type": "module",
+    "description": "A local-first garden planner PWA",
+    "scripts": {
+        "vendor:three": "node scripts/vendor-three.js"
+    },
+    "dependencies": {
+        "three": "0.180.0"
+    }
+}

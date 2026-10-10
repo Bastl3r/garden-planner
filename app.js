@@ -10,11 +10,12 @@ const translations = {
         brandLabel: 'Garden Planner Startseite', savedOnDevice: 'Lokal auf diesem Gerät gespeichert', gardenViews: 'Gartenansichten',
         plantLibrary: 'Pflanzenübersicht', inSeason: 'Saison', seasonOverview: 'Saisonübersicht', yourGarden: 'DEIN GARTEN', newAddition: 'NEUZUGANG',
         addPlant: 'Pflanze hinzufügen', editFormTitle: 'Pflanze bearbeiten', name: 'Name', namePlaceholder: 'z. B. Echter Lavendel', diameter: 'Durchmesser', height: 'Höhe',
+        plantTraits: 'Merkmale', woodyPlant: 'Gehölz', evergreen: 'Immergrün', herbaceousPlant: 'Krautpflanze',
         blossomColor: 'Blütenfarbe', blossomBegins: 'Blüte beginnt', blossomEnds: 'Blüte endet', cancel: 'Abbrechen', growingList: 'PFLANZENLISTE',
         yourPlants: 'Deine Pflanzen', plant: 'Pflanze', size: 'Größe', blossom: 'Blüte', color: 'Farbe', actions: 'Aktionen',
         emptyPlants: 'Noch keine Pflanzen in deiner Liste.', gardenRightNow: 'DER GARTEN, JETZT', blossomWatch: 'BLÜTENKALENDER',
         floweringThisMonth: 'Blüte in diesem Monat', monthPlaceholder: 'Monat auswählen', exportBackup: 'Exportieren', importBackup: 'Importieren',
-        exportSuccess: 'Sicherung wurde heruntergeladen.', importSuccess: 'Sicherung wurde importiert.', importConfirm: 'Der Import ersetzt deine gespeicherten Pflanzen und Sprache. Fortfahren?',
+        exportSuccess: 'Sicherung wurde heruntergeladen.', importSuccess: 'Sicherung wurde importiert.', importConfirm: 'Der Import ersetzt deine gespeicherten Pflanzen, Gartenpläne und Sprache. Fortfahren?',
         importError: 'Diese Sicherungsdatei ist ungültig oder kann nicht gelesen werden.', appNameFooter: 'GARDEN PLANNER', storageNote: 'Deine Sammlung bleibt in diesem Browser.',
         language: 'Sprache', selectLanguage: 'Sprache auswählen', editPlant: '{name} bearbeiten', deletePlant: '{name} löschen',
         deleteConfirm: '{name} aus deiner Pflanzenliste löschen?', saveChanges: 'Änderungen speichern', updateDetails: 'DETAILS ÄNDERN',
@@ -33,16 +34,21 @@ const translations = {
         planSizeError: 'Breite und Höhe müssen zwischen 1 und 20 Metern liegen.', noPlantsInLibrary: 'Keine Pflanzen in der Pflanzenübersicht.',
         choosePlantPlaceholder: 'Pflanze auswählen', selectPlacedPlant: '{name} auf dem Plan auswählen', removePlacedPlant: '{name} aus dem Plan entfernen',
         planPosition: '{x} m, {y} m',
+        gardenPreviewTab: 'Gartenvorschau', gardenPreviewEyebrow: 'DREIDIMENSIONALE ANSICHT', gardenPreviewTitle: 'Gartenvorschau',
+        previewMonth: 'VORSCHAU-MONAT', previewSceneLabel: '3D-Gartenvorschau', previewCanvasLabel: 'Drehbare 3D-Gartenansicht',
+        resetPreview: 'Ansicht zurücksetzen', previewNoPlants: 'Keine Pflanzen in diesem Plan platziert.',
+        previewBloomNone: 'Keine Pflanzen blühen', previewBloomOne: '1 Pflanze blüht', previewBloomMany: '{count} Pflanzen blühen',
     },
     en: {
         brandLabel: 'Garden Planner home', savedOnDevice: 'Saved on this device', gardenViews: 'Garden views',
         plantLibrary: 'Plant library', inSeason: 'In season', seasonOverview: 'In season', yourGarden: 'YOUR GARDEN', newAddition: 'NEW ADDITION',
         addPlant: 'Add a plant', editFormTitle: 'Edit plant', name: 'Name', namePlaceholder: 'e.g. French lavender', diameter: 'Diameter', height: 'Height',
+        plantTraits: 'Traits', woodyPlant: 'Woody plant', evergreen: 'Evergreen', herbaceousPlant: 'Herbaceous',
         blossomColor: 'Blossom color', blossomBegins: 'Blossom begins', blossomEnds: 'Blossom ends', cancel: 'Cancel', growingList: 'GROWING LIST',
         yourPlants: 'Your plants', plant: 'Plant', size: 'Size', blossom: 'Blossom', color: 'Color', actions: 'Actions',
         emptyPlants: 'No plants in your library yet.', gardenRightNow: 'THE GARDEN, RIGHT NOW', blossomWatch: 'BLOSSOM WATCH',
         floweringThisMonth: 'Flowering this month', monthPlaceholder: 'Choose month', exportBackup: 'Export', importBackup: 'Import',
-        exportSuccess: 'Backup downloaded.', importSuccess: 'Backup imported.', importConfirm: 'Importing replaces your saved plants and language. Continue?',
+        exportSuccess: 'Backup downloaded.', importSuccess: 'Backup imported.', importConfirm: 'Importing replaces your saved plants, garden plans, and language. Continue?',
         importError: 'This backup file is invalid or could not be read.', appNameFooter: 'GARDEN PLANNER', storageNote: 'Your collection stays in this browser.',
         language: 'Language', selectLanguage: 'Choose language', editPlant: 'Edit {name}', deletePlant: 'Delete {name}',
         deleteConfirm: 'Delete {name} from your library?', saveChanges: 'Save changes', updateDetails: 'UPDATE DETAILS',
@@ -61,6 +67,10 @@ const translations = {
         planSizeError: 'Width and height must be between 1 and 20 meters.', noPlantsInLibrary: 'No plants in the plant library.',
         choosePlantPlaceholder: 'Choose a plant', selectPlacedPlant: 'Select {name} on the plan', removePlacedPlant: 'Remove {name} from the plan',
         planPosition: '{x} m, {y} m',
+        gardenPreviewTab: 'Garden preview', gardenPreviewEyebrow: 'THREE-DIMENSIONAL VIEW', gardenPreviewTitle: 'Garden preview',
+        previewMonth: 'PREVIEW MONTH', previewSceneLabel: '3D garden preview', previewCanvasLabel: 'Rotatable 3D garden view',
+        resetPreview: 'Reset view', previewNoPlants: 'No plants placed in this plan.',
+        previewBloomNone: 'No plants in bloom', previewBloomOne: '1 plant in bloom', previewBloomMany: '{count} plants in bloom',
     },
 };
 
@@ -114,6 +124,10 @@ function formatNumber(value, maximumFractionDigits = 2) {
     return new Intl.NumberFormat(currentLanguage === 'de' ? 'de-DE' : 'en-US', { maximumFractionDigits }).format(value);
 }
 
+function notifyGardenUpdate(type) {
+    window.dispatchEvent(new Event(`garden-planner:${type}`));
+}
+
 function applyTranslations() {
     document.documentElement.lang = currentLanguage;
     document.querySelectorAll('[data-i18n]').forEach((element) => {
@@ -165,6 +179,8 @@ function readPlants() {
             ...plant,
             blossomStart: normalizeMonth(plant?.blossomStart),
             blossomEnd: normalizeMonth(plant?.blossomEnd),
+            isWoodyPlant: plant?.isWoodyPlant === true,
+            isEvergreen: plant?.isEvergreen === true,
         })).filter(isPlant) : [];
     } catch {
         return [];
@@ -235,6 +251,8 @@ function normalizeGardenPlan(value) {
             diameter: Number(placement?.diameter),
             height: Number(placement?.height),
             color: placement?.color,
+            isWoodyPlant: placement?.isWoodyPlant === true,
+            isEvergreen: placement?.isEvergreen === true,
             x: Number(placement?.x),
             y: Number(placement?.y),
         };
@@ -280,6 +298,7 @@ function persistGardenState() {
     try {
         localStorage.setItem(GARDEN_PLANS_STORAGE_KEY, JSON.stringify(gardenState));
         planMessage.textContent = '';
+        notifyGardenUpdate('plans-updated');
         return true;
     } catch {
         planMessage.textContent = t('planSaveError');
@@ -480,6 +499,8 @@ function validateBackup(backup) {
             color: plant?.color,
             blossomStart: normalizeMonth(plant?.blossomStart),
             blossomEnd: normalizeMonth(plant?.blossomEnd),
+            isWoodyPlant: plant?.isWoodyPlant === true,
+            isEvergreen: plant?.isEvergreen === true,
         };
         if (!normalized.id || !Number.isFinite(diameter) || diameter < 0 || !Number.isFinite(height) || height < 0
             || !normalized.name || !isPlant(normalized)) {
@@ -557,6 +578,7 @@ async function importBackup(file) {
         document.querySelector('#colorValue').textContent = colorInput.value.toUpperCase();
         formMessage.textContent = '';
         applyTranslations();
+        notifyGardenUpdate('data-restored');
         showBackupMessage('importSuccess');
     } catch {
         showBackupMessage('importError');
@@ -566,6 +588,7 @@ async function importBackup(file) {
 function isPlant(value) {
     return value && typeof value.id === 'string' && typeof value.name === 'string'
         && Number.isFinite(Number(value.diameter)) && Number.isFinite(Number(value.height))
+        && typeof value.isWoodyPlant === 'boolean' && typeof value.isEvergreen === 'boolean'
         && /^#[\da-f]{6}$/i.test(value.color)
         && /^(?:0[1-9]|1[0-2])$/.test(value.blossomStart) && /^(?:0[1-9]|1[0-2])$/.test(value.blossomEnd);
 }
@@ -574,6 +597,7 @@ function persistPlants() {
     try {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(plants));
         formMessage.textContent = '';
+        notifyGardenUpdate('plants-updated');
         return true;
     } catch {
         formMessage.textContent = t('couldNotSave');
@@ -601,6 +625,7 @@ function renderPlants() {
     <td class="size-cell">${formatNumber(Number(plant.diameter), 1)} cm &times; ${formatNumber(Number(plant.height))} m</td>
       <td>${displayMonth(plant.blossomStart)} &ndash; ${displayMonth(plant.blossomEnd)}</td>
       <td><span class="color-chip"><i style="background:${plant.color}"></i>${plant.color}</span></td>
+    <td><span class="trait-list">${plant.isWoodyPlant ? `<span class="trait-chip">${t('woodyPlant')}</span>` : ''}${plant.isEvergreen ? `<span class="trait-chip">${t('evergreen')}</span>` : ''}${!plant.isWoodyPlant && !plant.isEvergreen ? `<span class="trait-none">${t('herbaceousPlant')}</span>` : ''}</span></td>
       <td><span class="row-actions">
         <button class="icon-button" type="button" data-edit="${plant.id}" aria-label="${t('editPlant', { name: escapeHtml(plant.name) })}" title="${t('editPlant', { name: escapeHtml(plant.name) })}">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L8 18l-4 1 1-4Z"/></svg>
@@ -658,6 +683,8 @@ function editPlant(id) {
     for (const key of ['name', 'diameter', 'height', 'color', 'blossomStart', 'blossomEnd']) {
         form.elements[key].value = plant[key];
     }
+    form.elements.isWoodyPlant.checked = plant.isWoodyPlant;
+    form.elements.isEvergreen.checked = plant.isEvergreen;
     document.querySelector('#colorValue').textContent = plant.color.toUpperCase();
     updateFormMode();
     formMessage.textContent = '';
@@ -679,6 +706,8 @@ form.addEventListener('submit', (event) => {
         color: formData.get('color'),
         blossomStart,
         blossomEnd,
+        isWoodyPlant: form.elements.isWoodyPlant.checked,
+        isEvergreen: form.elements.isEvergreen.checked,
     };
     const previous = plants;
     plants = editingId ? plants.map((item) => item.id === editingId ? plant : item) : [...plants, plant];
@@ -721,6 +750,7 @@ languageSelect.addEventListener('change', () => {
     formMessage.textContent = '';
     clearBackupMessage();
     applyTranslations();
+    notifyGardenUpdate('language-updated');
 });
 colorInput.addEventListener('input', () => {
     document.querySelector('#colorValue').textContent = colorInput.value.toUpperCase();
@@ -909,6 +939,8 @@ function placeSelectedPlant(plan, point) {
         diameter: Number(selectedPlant.diameter),
         height: Number(selectedPlant.height),
         color: selectedPlant.color,
+        isWoodyPlant: selectedPlant.isWoodyPlant,
+        isEvergreen: selectedPlant.isEvergreen,
         x: (point.column + 0.5) / GRID_CELLS_PER_METER,
         y: (point.row + 0.5) / GRID_CELLS_PER_METER,
     };
