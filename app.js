@@ -8,7 +8,7 @@ const translations = {
         blossomColor: 'Blütenfarbe', blossomBegins: 'Blüte beginnt', blossomEnds: 'Blüte endet', cancel: 'Abbrechen', growingList: 'PFLANZENLISTE',
         yourPlants: 'Deine Pflanzen', plant: 'Pflanze', size: 'Größe', blossom: 'Blüte', color: 'Farbe', actions: 'Aktionen',
         emptyPlants: 'Noch keine Pflanzen in deiner Liste.', gardenRightNow: 'DER GARTEN, JETZT', blossomWatch: 'BLÜTENKALENDER',
-        floweringThisMonth: 'Blüte in diesem Monat', appNameFooter: 'GARDEN PLANNER', storageNote: 'Deine Sammlung bleibt in diesem Browser.',
+        floweringThisMonth: 'Blüte in diesem Monat', monthPlaceholder: 'Monat auswählen', appNameFooter: 'GARDEN PLANNER', storageNote: 'Deine Sammlung bleibt in diesem Browser.',
         language: 'Sprache', selectLanguage: 'Sprache auswählen', editPlant: '{name} bearbeiten', deletePlant: '{name} löschen',
         deleteConfirm: '{name} aus deiner Pflanzenliste löschen?', saveChanges: 'Änderungen speichern', updateDetails: 'DETAILS ÄNDERN',
         couldNotSave: 'Speichern nicht möglich. Der Browserspeicher ist möglicherweise voll.', blossomDateError: 'Das Blütenende muss im oder nach dem Startmonat liegen.',
@@ -23,7 +23,7 @@ const translations = {
         blossomColor: 'Blossom color', blossomBegins: 'Blossom begins', blossomEnds: 'Blossom ends', cancel: 'Cancel', growingList: 'GROWING LIST',
         yourPlants: 'Your plants', plant: 'Plant', size: 'Size', blossom: 'Blossom', color: 'Color', actions: 'Actions',
         emptyPlants: 'No plants in your library yet.', gardenRightNow: 'THE GARDEN, RIGHT NOW', blossomWatch: 'BLOSSOM WATCH',
-        floweringThisMonth: 'Flowering this month', appNameFooter: 'GARDEN PLANNER', storageNote: 'Your collection stays in this browser.',
+        floweringThisMonth: 'Flowering this month', monthPlaceholder: 'Choose month', appNameFooter: 'GARDEN PLANNER', storageNote: 'Your collection stays in this browser.',
         language: 'Language', selectLanguage: 'Choose language', editPlant: 'Edit {name}', deletePlant: 'Delete {name}',
         deleteConfirm: 'Delete {name} from your library?', saveChanges: 'Save changes', updateDetails: 'UPDATE DETAILS',
         couldNotSave: 'Could not save. Browser storage may be full.', blossomDateError: 'Blossom end must be in or after the start month.',
@@ -80,8 +80,23 @@ function applyTranslations() {
         ? 'Ein lokaler Gartenplaner zur Verwaltung deiner Pflanzen.'
         : 'A local-first garden planner for keeping track of your plants.';
     languageSelect.value = currentLanguage;
+    updateMonthOptions();
     updateFormMode();
     renderPlants();
+}
+
+function updateMonthOptions() {
+    const locale = currentLanguage === 'de' ? 'de-DE' : 'en-US';
+    const formatter = new Intl.DateTimeFormat(locale, { month: 'long', timeZone: 'UTC' });
+    for (const select of [form.elements.blossomStart, form.elements.blossomEnd]) {
+        const selectedMonth = select.value;
+        select.replaceChildren(new Option(t('monthPlaceholder'), ''));
+        for (let month = 1; month <= 12; month += 1) {
+            const monthValue = String(month).padStart(2, '0');
+            select.add(new Option(formatter.format(new Date(Date.UTC(2000, month - 1, 1))), monthValue));
+        }
+        select.value = selectedMonth;
+    }
 }
 
 function updateFormMode() {
@@ -94,17 +109,25 @@ function updateFormMode() {
 function readPlants() {
     try {
         const value = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
-        return Array.isArray(value) ? value.filter(isPlant) : [];
+        return Array.isArray(value) ? value.map((plant) => ({
+            ...plant,
+            blossomStart: normalizeMonth(plant?.blossomStart),
+            blossomEnd: normalizeMonth(plant?.blossomEnd),
+        })).filter(isPlant) : [];
     } catch {
         return [];
     }
+}
+
+function normalizeMonth(value) {
+    return typeof value === 'string' ? value.match(/^(?:\d{4}-)?(0[1-9]|1[0-2])$/)?.[1] || '' : '';
 }
 
 function isPlant(value) {
     return value && typeof value.id === 'string' && typeof value.name === 'string'
         && Number.isFinite(Number(value.diameter)) && Number.isFinite(Number(value.height))
         && /^#[\da-f]{6}$/i.test(value.color)
-        && /^\d{4}-\d{2}$/.test(value.blossomStart) && /^\d{4}-\d{2}$/.test(value.blossomEnd);
+        && /^(?:0[1-9]|1[0-2])$/.test(value.blossomStart) && /^(?:0[1-9]|1[0-2])$/.test(value.blossomEnd);
 }
 
 function persistPlants() {
@@ -119,9 +142,9 @@ function persistPlants() {
 }
 
 function displayMonth(value) {
-    const [year, month] = value.split('-').map(Number);
-    return new Intl.DateTimeFormat(currentLanguage === 'de' ? 'de-DE' : 'en-US', { month: 'short', year: 'numeric', timeZone: 'UTC' })
-        .format(new Date(Date.UTC(year, month - 1, 1)));
+    const month = Number(value.slice(-2));
+    return new Intl.DateTimeFormat(currentLanguage === 'de' ? 'de-DE' : 'en-US', { month: 'short', timeZone: 'UTC' })
+        .format(new Date(Date.UTC(2000, month - 1, 1)));
 }
 
 function escapeHtml(value) {
@@ -158,15 +181,15 @@ function renderPlants() {
 function renderSeason() {
     const now = new Date();
     const month = now.getMonth() + 1;
-    const year = now.getFullYear();
-    const monthValue = `${year}-${String(month).padStart(2, '0')}`;
     const flowering = plants.filter((plant) => {
-        const start = Number(plant.blossomStart.slice(5));
-        const end = Number(plant.blossomEnd.slice(5));
+        const start = Number(plant.blossomStart);
+        const end = Number(plant.blossomEnd);
         return start <= end ? month >= start && month <= end : month >= start || month <= end;
     });
-    const next = plants.filter((plant) => plant.blossomStart > monthValue)
-        .sort((first, second) => first.blossomStart.localeCompare(second.blossomStart))[0];
+    const next = plants.map((plant) => ({
+        ...plant,
+        monthsUntil: (Number(plant.blossomStart) - month + 12) % 12 || 12,
+    })).sort((first, second) => first.monthsUntil - second.monthsUntil)[0];
 
     document.querySelector('#seasonMonth').textContent = new Intl.DateTimeFormat(currentLanguage === 'de' ? 'de-DE' : 'en-US', { month: 'long', year: 'numeric' }).format(now);
     document.querySelector('#seasonSummary').innerHTML = `
@@ -206,11 +229,6 @@ form.addEventListener('submit', (event) => {
     const formData = new FormData(form);
     const blossomStart = formData.get('blossomStart');
     const blossomEnd = formData.get('blossomEnd');
-    if (blossomEnd < blossomStart) {
-        formMessage.textContent = t('blossomDateError');
-        document.querySelector('#blossomEnd').focus();
-        return;
-    }
 
     const plant = {
         id: editingId || (crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random().toString(16).slice(2)}`),
