@@ -1,0 +1,18 @@
+{
+    "name": "Garden Planner",
+    "short_name": "Garden",
+    "description": "A local-first garden planner for keeping track of your plants.",
+    "start_url": "./",
+    "scope": "./",
+    "display": "standalone",
+    "background_color": "#f4f7ef",
+    "theme_color": "#f4f7ef",
+    "icons": [
+        {
+            "src": "./assets/leaf-mark.svg",
+            "sizes": "any",
+            "type": "image/svg+xml",
+            "purpose": "any"
+        }
+    ]
+}

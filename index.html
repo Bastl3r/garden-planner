@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#f4f7ef" />
+    <meta name="description" content="A local-first garden planner for keeping track of your plants." />
+    <title>Garden Planner</title>
+    <link rel="icon" href="./assets/leaf-mark.svg" type="image/svg+xml" />
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <link rel="stylesheet" href="./styles.css" />
+</head>
+
+<body>
+    <header class="site-header">
+        <a class="brand" href="/" aria-label="Garden Planner home">
+            <img src="./assets/leaf-mark.svg" alt="" width="42" height="42" />
+            <span>Garden <strong>Planner</strong></span>
+        </a>
+        <span class="local-indicator"><span aria-hidden="true"></span> Saved on this device</span>
+    </header>
+
+    <main class="app-shell">
+        <nav class="tabs" role="tablist" aria-label="Garden views">
+            <button class="tab is-active" id="plantsTab" type="button" role="tab" aria-selected="true"
+                aria-controls="plantsPanel" data-tab="plantsPanel">Plant library</button>
+            <button class="tab" id="seasonTab" type="button" role="tab" aria-selected="false"
+                aria-controls="seasonPanel" data-tab="seasonPanel" tabindex="-1">In season</button>
+        </nav>
+
+        <section class="tab-panel" id="plantsPanel" role="tabpanel" aria-labelledby="plantsTab">
+            <div class="page-heading">
+                <div>
+                    <p class="eyebrow">YOUR GARDEN</p>
+                    <h1>Plant library</h1>
+                </div>
+                <p class="plant-count" id="plantCount">0 plants</p>
+            </div>
+
+            <section class="form-panel" aria-labelledby="formTitle">
+                <div class="section-heading">
+                    <div>
+                        <p class="eyebrow" id="formEyebrow">NEW ADDITION</p>
+                        <h2 id="formTitle">Add a plant</h2>
+                    </div>
+                    <span class="form-mark" aria-hidden="true">+</span>
+                </div>
+                <form id="plantForm">
+                    <div class="form-grid">
+                        <label class="field field-name">
+                            <span>Name</span>
+                            <input id="name" name="name" type="text" placeholder="e.g. French lavender" maxlength="80"
+                                required />
+                        </label>
+                        <label class="field">
+                            <span>Diameter <small>cm</small></span>
+                            <input id="diameter" name="diameter" type="number" min="0" step="0.1" placeholder="45"
+                                required />
+                        </label>
+                        <label class="field">
+                            <span>Height <small>m</small></span>
+                            <input id="height" name="height" type="number" min="0" step="0.01" placeholder="0.6"
+                                required />
+                        </label>
+                        <label class="field color-field">
+                            <span>Blossom color</span>
+                            <span class="color-control"><input id="color" name="color" type="color" value="#d66e59"
+                                    aria-label="Blossom color" /><span id="colorValue">#D66E59</span></span>
+                        </label>
+                        <label class="field">
+                            <span>Blossom begins</span>
+                            <input id="blossomStart" name="blossomStart" type="month" required />
+                        </label>
+                        <label class="field">
+                            <span>Blossom ends</span>
+                            <input id="blossomEnd" name="blossomEnd" type="month" required />
+                        </label>
+                    </div>
+                    <div class="form-actions">
+                        <p class="form-message" id="formMessage" aria-live="polite"></p>
+                        <div class="action-buttons">
+                            <button class="button button-quiet is-hidden" id="cancelEdit" type="button">Cancel</button>
+                            <button class="button button-primary" id="savePlant" type="submit"><span
+                                    aria-hidden="true">+</span> Add plant</button>
+                        </div>
+                    </div>
+                </form>
+            </section>
+
+            <section class="collection" aria-labelledby="collectionTitle">
+                <div class="section-heading collection-heading">
+                    <div>
+                        <p class="eyebrow">GROWING LIST</p>
+                        <h2 id="collectionTitle">Your plants</h2>
+                    </div>
+                    <span class="collection-count" id="collectionCount">0</span>
+                </div>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th scope="col">Plant</th>
+                                <th scope="col">Size</th>
+                                <th scope="col">Blossom</th>
+                                <th scope="col">Color</th>
+                                <th scope="col"><span class="sr-only">Actions</span></th>
+                            </tr>
+                        </thead>
+                        <tbody id="plantRows"></tbody>
+                    </table>
+                    <div class="empty-state" id="emptyState">
+                        <span class="empty-icon" aria-hidden="true">✳</span>
+                        <p>No plants in your library yet.</p>
+                    </div>
+                </div>
+            </section>
+        </section>
+
+        <section class="tab-panel is-hidden" id="seasonPanel" role="tabpanel" aria-labelledby="seasonTab" hidden>
+            <div class="page-heading">
+                <div>
+                    <p class="eyebrow">THE GARDEN, RIGHT NOW</p>
+                    <h1>In season</h1>
+                </div>
+                <p class="season-month" id="seasonMonth"></p>
+            </div>
+            <div class="season-summary" id="seasonSummary"></div>
+            <section class="collection season-collection" aria-labelledby="seasonListTitle">
+                <div class="section-heading collection-heading">
+                    <div>
+                        <p class="eyebrow">BLOSSOM WATCH</p>
+                        <h2 id="seasonListTitle">Flowering this month</h2>
+                    </div>
+                </div>
+                <div class="season-list" id="seasonList"></div>
+            </section>
+        </section>
+        <footer class="app-footer"><span>GARDEN PLANNER</span><span id="storageNote">Your collection stays in this
+                browser.</span></footer>
+    </main>
+
+    <script src="./app.js" defer></script>
+</body>
+
+</html>
