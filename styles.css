@@ -101,6 +101,7 @@ button {
 
 .tabs {
     display: flex;
+    flex-wrap: wrap;
     gap: 28px;
     border-bottom: 1px solid #ccd9cd;
 }
@@ -114,6 +115,7 @@ button {
     cursor: pointer;
     font-size: 13px;
     font-weight: 700;
+    white-space: nowrap;
 }
 
 .tab::after {
@@ -1184,7 +1186,7 @@ td {
     }
 
     .tabs {
-        gap: 22px;
+        gap: 0 18px;
     }
 
     .page-heading {
