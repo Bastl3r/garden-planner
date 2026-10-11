@@ -303,15 +303,32 @@
             <section class="preview-stage" aria-label="3D-Gartenvorschau" data-i18n-aria-label="previewSceneLabel">
                 <div class="preview-stage-bar">
                     <span class="preview-stage-plan" id="previewStagePlan"></span>
-                    <button class="icon-button preview-reset" id="previewReset" type="button"
-                        aria-label="Ansicht zurücksetzen" title="Ansicht zurücksetzen"
-                        data-i18n-aria-label="resetPreview" data-i18n-title="resetPreview">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
-                            stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                            <path d="M3 12a9 9 0 1 0 2.6-6.4L3 8" />
-                            <path d="M3 3v5h5" />
-                        </svg>
-                    </button>
+                    <div class="preview-view-actions" role="group" aria-label="Ansichtssteuerung"
+                        data-i18n-aria-label="previewViewControls">
+                        <button class="icon-button" id="previewZoomOut" type="button" aria-label="Verkleinern"
+                            title="Verkleinern" data-i18n-aria-label="zoomOut" data-i18n-title="zoomOut">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+                                stroke-linecap="round" aria-hidden="true">
+                                <path d="M5 12h14" />
+                            </svg>
+                        </button>
+                        <button class="icon-button preview-reset" id="previewReset" type="button"
+                            aria-label="Ansicht zurücksetzen" title="Ansicht zurücksetzen"
+                            data-i18n-aria-label="resetPreview" data-i18n-title="resetPreview">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+                                stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <path d="M3 12a9 9 0 1 0 2.6-6.4L3 8" />
+                                <path d="M3 3v5h5" />
+                            </svg>
+                        </button>
+                        <button class="icon-button" id="previewZoomIn" type="button" aria-label="Vergrößern"
+                            title="Vergrößern" data-i18n-aria-label="zoomIn" data-i18n-title="zoomIn">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+                                stroke-linecap="round" aria-hidden="true">
+                                <path d="M5 12h14M12 5v14" />
+                            </svg>
+                        </button>
+                    </div>
                 </div>
                 <div class="preview-viewport" id="gardenPreviewViewport" tabindex="0" role="application"
                     aria-label="Drehbare 3D-Gartenansicht" data-i18n-aria-label="previewCanvasLabel"></div>

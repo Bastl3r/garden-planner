@@ -1,4 +1,4 @@
-const CACHE_NAME = 'garden-planner-shell-v10';
+const CACHE_NAME = 'garden-planner-shell-v11';
 const APP_BASE = new URL('./', self.location.href);
 const APP_SHELL = [
     '',
