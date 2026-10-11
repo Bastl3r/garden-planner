@@ -11,6 +11,8 @@ const planName = document.querySelector('#previewPlanName');
 const stagePlanName = document.querySelector('#previewStagePlan');
 const emptyMessage = document.querySelector('#previewEmpty');
 const resetButton = document.querySelector('#previewReset');
+const zoomInButton = document.querySelector('#previewZoomIn');
+const zoomOutButton = document.querySelector('#previewZoomOut');
 
 let renderer;
 let scene;
@@ -26,6 +28,8 @@ let currentPlan;
 let currentPlants = [];
 let activeMonth = new Date().getMonth() + 1;
 let pointerPosition = null;
+const activePointers = new Map();
+let pinchDistance = null;
 let lastRenderedPlanSignature = '';
 
 function readStoredValue(key, fallback) {
@@ -333,6 +337,16 @@ function resetOrbit() {
     setCameraPosition();
 }
 
+function zoomBy(scale) {
+    orbitDistance = THREE.MathUtils.clamp(orbitDistance * scale, 2.5, 60);
+    setCameraPosition();
+}
+
+function pointerDistance() {
+    const [first, second] = [...activePointers.values()];
+    return Math.hypot(first.x - second.x, first.y - second.y);
+}
+
 function resizeRenderer() {
     if (!renderer || !camera) return;
     const width = viewport.clientWidth;
@@ -398,15 +412,31 @@ document.querySelector('#previewTab').addEventListener('click', () => {
 });
 
 resetButton.addEventListener('click', resetOrbit);
+zoomInButton.addEventListener('click', () => zoomBy(0.88));
+zoomOutButton.addEventListener('click', () => zoomBy(1.14));
 
 viewport.addEventListener('pointerdown', (event) => {
-    if (event.button !== 0) return;
-    pointerPosition = { id: event.pointerId, x: event.clientX, y: event.clientY };
+    if (event.pointerType === 'mouse' && event.button !== 0) return;
+    activePointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
     viewport.setPointerCapture(event.pointerId);
     viewport.classList.add('is-orbiting');
+    if (activePointers.size === 1) {
+        pointerPosition = { id: event.pointerId, x: event.clientX, y: event.clientY };
+    } else {
+        pointerPosition = null;
+        pinchDistance = pointerDistance();
+    }
 });
 
 viewport.addEventListener('pointermove', (event) => {
+    if (!activePointers.has(event.pointerId)) return;
+    activePointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
+    if (activePointers.size >= 2) {
+        const nextDistance = pointerDistance();
+        if (pinchDistance && nextDistance > 0) zoomBy(pinchDistance / nextDistance);
+        pinchDistance = nextDistance;
+        return;
+    }
     if (!pointerPosition || pointerPosition.id !== event.pointerId) return;
     const deltaX = event.clientX - pointerPosition.x;
     const deltaY = event.clientY - pointerPosition.y;
@@ -417,17 +447,26 @@ viewport.addEventListener('pointermove', (event) => {
     setCameraPosition();
 });
 
-function stopOrbit() {
-    pointerPosition = null;
-    viewport.classList.remove('is-orbiting');
+function stopOrbit(event) {
+    activePointers.delete(event.pointerId);
+    if (activePointers.size === 1) {
+        const [id, point] = activePointers.entries().next().value;
+        pointerPosition = { id, ...point };
+        pinchDistance = null;
+    } else if (activePointers.size === 0) {
+        pointerPosition = null;
+        pinchDistance = null;
+        viewport.classList.remove('is-orbiting');
+    } else {
+        pinchDistance = pointerDistance();
+    }
 }
 
 viewport.addEventListener('pointerup', stopOrbit);
 viewport.addEventListener('pointercancel', stopOrbit);
 viewport.addEventListener('wheel', (event) => {
     event.preventDefault();
-    orbitDistance = THREE.MathUtils.clamp(orbitDistance * Math.exp(event.deltaY * 0.001), 2.5, 60);
-    setCameraPosition();
+    zoomBy(Math.exp(event.deltaY * 0.001));
 }, { passive: false });
 
 viewport.addEventListener('keydown', (event) => {
@@ -440,11 +479,9 @@ viewport.addEventListener('keydown', (event) => {
         orbitPolar = THREE.MathUtils.clamp(orbitPolar + keyMoves[event.key][1], 0.12, 1.48);
         setCameraPosition();
     } else if (event.key === '+' || event.key === '=') {
-        orbitDistance = Math.max(2.5, orbitDistance * 0.9);
-        setCameraPosition();
+        zoomBy(0.9);
     } else if (event.key === '-') {
-        orbitDistance = Math.min(60, orbitDistance * 1.1);
-        setCameraPosition();
+        zoomBy(1.1);
     }
 });
 
