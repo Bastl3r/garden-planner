@@ -36,7 +36,8 @@ const translations = {
         planPosition: '{x} m, {y} m',
         gardenPreviewTab: 'Gartenvorschau', gardenPreviewEyebrow: 'DREIDIMENSIONALE ANSICHT', gardenPreviewTitle: 'Gartenvorschau',
         previewMonth: 'VORSCHAU-MONAT', previewSceneLabel: '3D-Gartenvorschau', previewCanvasLabel: 'Drehbare 3D-Gartenansicht',
-        resetPreview: 'Ansicht zurücksetzen', previewNoPlants: 'Keine Pflanzen in diesem Plan platziert.',
+        resetPreview: 'Ansicht zurücksetzen', zoomIn: 'Vergrößern', zoomOut: 'Verkleinern', previewViewControls: 'Ansichtssteuerung',
+        previewNoPlants: 'Keine Pflanzen in diesem Plan platziert.',
         previewBloomNone: 'Keine Pflanzen blühen', previewBloomOne: '1 Pflanze blüht', previewBloomMany: '{count} Pflanzen blühen',
     },
     en: {
@@ -69,7 +70,8 @@ const translations = {
         planPosition: '{x} m, {y} m',
         gardenPreviewTab: 'Garden preview', gardenPreviewEyebrow: 'THREE-DIMENSIONAL VIEW', gardenPreviewTitle: 'Garden preview',
         previewMonth: 'PREVIEW MONTH', previewSceneLabel: '3D garden preview', previewCanvasLabel: 'Rotatable 3D garden view',
-        resetPreview: 'Reset view', previewNoPlants: 'No plants placed in this plan.',
+        resetPreview: 'Reset view', zoomIn: 'Zoom in', zoomOut: 'Zoom out', previewViewControls: 'View controls',
+        previewNoPlants: 'No plants placed in this plan.',
         previewBloomNone: 'No plants in bloom', previewBloomOne: '1 plant in bloom', previewBloomMany: '{count} plants in bloom',
     },
 };

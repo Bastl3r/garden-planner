@@ -1017,6 +1017,28 @@ td {
     padding: 0 2px;
 }
 
+.preview-view-actions {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.preview-view-actions .icon-button {
+    width: 36px;
+    height: 36px;
+    border-color: #dce4db;
+    background: rgba(255, 254, 250, 0.72);
+}
+
+.preview-view-actions .icon-button:hover {
+    background: #fffefa;
+}
+
+.preview-view-actions svg {
+    width: 16px;
+    height: 16px;
+}
+
 .preview-reset {
     border-color: #dce4db;
 }
