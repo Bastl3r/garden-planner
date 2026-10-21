@@ -75,8 +75,8 @@ function decodeSurface(value, cellCount) {
 }
 
 function makeGroundTexture(plan) {
-    const columns = Math.round(plan.height * GRID_CELLS_PER_METER);
-    const rows = Math.round(plan.width * GRID_CELLS_PER_METER);
+    const columns = Math.round(plan.width * GRID_CELLS_PER_METER);
+    const rows = Math.round(plan.height * GRID_CELLS_PER_METER);
     const pixels = document.createElement('canvas');
     pixels.width = columns;
     pixels.height = rows;
@@ -283,7 +283,7 @@ function rebuildGarden() {
     const texture = makeGroundTexture(currentPlan);
     groundMaterial = new THREE.MeshStandardMaterial({ map: texture, roughness: 0.96, metalness: 0 });
     const ground = new THREE.Mesh(new THREE.PlaneGeometry(width, depth), groundMaterial);
-    ground.rotation.x = -Math.PI / 2;
+    ground.rotation.x = Math.PI / 2; //-Math.PI / 2;
     ground.receiveShadow = true;
     gardenGroup.add(ground);
 
