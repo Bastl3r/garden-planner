@@ -96,7 +96,7 @@ function makeGroundTexture(plan) {
     const texture = new THREE.CanvasTexture(pixels);
     texture.colorSpace = THREE.SRGBColorSpace;
     texture.center.set(0.5, 0.5);
-    texture.rotation = -Math.PI;
+    texture.rotation = -Math.PI / 2;
     texture.anisotropy = renderer.capabilities.getMaxAnisotropy();
     return texture;
 }
