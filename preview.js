@@ -95,6 +95,8 @@ function makeGroundTexture(plan) {
     context.putImageData(image, 0, 0);
     const texture = new THREE.CanvasTexture(pixels);
     texture.colorSpace = THREE.SRGBColorSpace;
+    texture.center.set(0.5, 0.5);
+    texture.rotation = -Math.PI;
     texture.anisotropy = renderer.capabilities.getMaxAnisotropy();
     return texture;
 }
