@@ -95,6 +95,7 @@ function makeGroundTexture(plan) {
     context.putImageData(image, 0, 0);
     const texture = new THREE.CanvasTexture(pixels);
     texture.colorSpace = THREE.SRGBColorSpace;
+    texture.rotation = Math.PI;
     texture.anisotropy = renderer.capabilities.getMaxAnisotropy();
     return texture;
 }
@@ -283,7 +284,7 @@ function rebuildGarden() {
     const texture = makeGroundTexture(currentPlan);
     groundMaterial = new THREE.MeshStandardMaterial({ map: texture, roughness: 0.96, metalness: 0 });
     const ground = new THREE.Mesh(new THREE.PlaneGeometry(width, depth), groundMaterial);
-    ground.rotation.x = Math.PI / 2; //-Math.PI / 2;
+    ground.rotation.x = -Math.PI / 2;
     ground.receiveShadow = true;
     gardenGroup.add(ground);
 
